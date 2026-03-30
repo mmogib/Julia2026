@@ -152,49 +152,114 @@ helper_symbol_checks = (
 # ╔═╡ 20000000-0000-0000-0000-00000000000d
 crosswalk_rows = [
     (
-        paper_label = "Problem 1",
-        paper_source = "Zhou and Li (2007)",
-        local_helper_symbol = :NonsmoothSine,
-        projection_symbol = :projectOnBox,
-        dimensions = experiment_definition.reported_dimensions,
-        mapping_status = :provisional,
-        notes = "Heuristic candidate based on the helper symbol name and an admissible nonnegative projection choice; the paper-to-helper mapping is not yet verified from committed branch evidence.",
-    ),
-    (
         paper_label = "Problem 2",
-        paper_source = "Zhou and Li (2007)",
-        local_helper_symbol = :SmoothSine,
+        paper_source = "[53, Problem 9]",
+        local_helper_symbol = :ExponetialI,
         projection_symbol = :projectOnBox,
+        projection_config = (bounds = (0.0, Inf),),
         dimensions = experiment_definition.reported_dimensions,
-        mapping_status = :provisional,
-        notes = "Heuristic candidate based on the helper symbol name and the same projection family used elsewhere in the notebook; lower-bound details still need verification against the paper.",
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list, with explicit positive-orthant evidence `R_n^+`.",
     ),
     (
         paper_label = "Problem 3",
-        paper_source = "La Cruz and Raydan (2003)",
-        local_helper_symbol = :ExponetialIII,
-        projection_symbol = :projectOnRn,
+        paper_source = "[54, Problem 1]",
+        local_helper_symbol = :ExponetialSineCosine,
+        projection_symbol = nothing,
+        projection_config = (;),
         dimensions = experiment_definition.reported_dimensions,
-        mapping_status = :provisional,
-        notes = "Heuristic candidate based on the helper symbol name and unconstrained projection choice; the Experiment 1 numbering crosswalk still needs verification.",
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
     ),
     (
         paper_label = "Problem 4",
-        paper_source = "Zheng, Yang, and Liang (2020)",
-        local_helper_symbol = :ModifiedTrigI,
-        projection_symbol = :projectOnRn,
+        paper_source = "[55, Problem 10]",
+        local_helper_symbol = :Logarithmic,
+        projection_symbol = nothing,
+        projection_config = (;),
         dimensions = experiment_definition.reported_dimensions,
-        mapping_status = :candidate,
-        notes = "A plausible first implementation target because the helper definition is compact and unconstrained.",
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
     ),
     (
         paper_label = "Problem 5",
-        paper_source = "Bing and Lin (1991)",
-        local_helper_symbol = :Tridiagonal,
-        projection_symbol = :projectOnRn,
+        paper_source = "[56, Problem 2]",
+        local_helper_symbol = :ModifiedNonsmoothSine,
+        projection_symbol = nothing,
+        projection_config = (;),
         dimensions = experiment_definition.reported_dimensions,
-        mapping_status = :provisional,
-        notes = "Heuristic candidate based on the helper symbol name and unconstrained projection choice; this remains a plausible Experiment 1 member, not a verified mapping.",
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 6",
+        paper_source = "[54, Problem 2]",
+        local_helper_symbol = :ModifiedNonsmoothSine2,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 7",
+        paper_source = "[49, Problem 4.4]",
+        local_helper_symbol = :ModifiedTridiagonal,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 8",
+        paper_source = "[49, Problem 4.2]",
+        local_helper_symbol = :ModifiedTrigI,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 9",
+        paper_source = "[48, Problem 4.2]",
+        local_helper_symbol = :NonmoothLogarithmic,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 10",
+        paper_source = "[57, Problem 1]",
+        local_helper_symbol = :NonsmoothSine,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 11",
+        paper_source = "[53, Problem 9]",
+        local_helper_symbol = :PolynomialI,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
+    ),
+    (
+        paper_label = "Problem 12",
+        paper_source = "[57, Problem 2]",
+        local_helper_symbol = :SmoothSine,
+        projection_symbol = nothing,
+        projection_config = (;),
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :verified_from_pdftotext,
+        notes = "Exact helper-name match from the extracted Experiment 1 list; the projection is not fixed by the current excerpt.",
     ),
 ]
 
@@ -202,34 +267,41 @@ crosswalk_rows = [
 crosswalk_summary = (
     rows = length(crosswalk_rows),
     statuses = map(row -> row.mapping_status, crosswalk_rows),
-    mapped_symbols_defined = all(
-        row -> isdefined(@__MODULE__, row.local_helper_symbol) && isdefined(@__MODULE__, row.projection_symbol),
+    verified_rows = count(row -> row.mapping_status == :verified_from_pdftotext, crosswalk_rows),
+    mapped_problem_symbols_defined = all(
+        row -> isdefined(@__MODULE__, row.local_helper_symbol),
+        crosswalk_rows,
+    ),
+    mapped_projection_symbols_defined = all(
+        row -> isnothing(row.projection_symbol) || isdefined(@__MODULE__, row.projection_symbol),
         crosswalk_rows,
     ),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000db
 first_case_slot = (
-    paper_label = "Problem 4",
-    local_helper_symbol = :ModifiedTrigI,
-    projection_symbol = :projectOnRn,
+    paper_label = "Problem 2",
+    local_helper_symbol = :ExponetialI,
+    projection_symbol = :projectOnBox,
+    projection_config = (bounds = (0.0, Inf),),
     dimension = 10^3,
-    mapping_status = :candidate,
-    verification_boundary = "Use this as the first implementation runway only after confirming that Ibrahim 2023 Experiment 1 maps this paper row to the same local helper family.",
-    implementation_readiness = "The helper function and projection are available locally, so the next notebook unit can focus on a single residual-evaluation or feasibility check.",
+    mapping_status = :verified_from_pdftotext,
+    verification_boundary = "The helper name and `R_n^+` constraint are both supported by the extracted paper list, but this notebook still does not claim a reproduced STTDFPM run.",
+    implementation_readiness = "This is the best teaching entry point because the positive-orthant projection is explicit and the residual can be checked on a simple nonnegative initialization.",
 )
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000dc
 md"""
 ## First-Case Choice
 
-The first implementation runway is the current `Problem 4` candidate:
+The first implementation runway is now the verified `Problem 2` row from the extracted paper list:
 
-- local helper: `ModifiedTrigI`
-- projection: `projectOnRn`
+- local helper: `ExponetialI`
+- projection: `projectOnBox`
+- projection config: `bounds = (0.0, Inf)`
 - starting dimension for the first executable unit: `10^3`
 
-This choice is conservative. It is still a candidate mapping, not a verified paper row, but it is the best available first unit because the helper is compact and the projection is unconstrained. That lets the notebook validate residual evaluation and state setup before any full STTDFPM step is attempted.
+This choice is conservative and stronger than the earlier runway. The helper name and the positive-orthant constraint are both supported directly by the extracted Experiment 1 list. It is still only the first verified unit, not a full algorithm reproduction, which makes it a better teaching entry point than a broader step implementation.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000dd
@@ -237,9 +309,10 @@ first_case_choice = (
     selected_from_crosswalk = first_case_slot.paper_label,
     local_helper_symbol = first_case_slot.local_helper_symbol,
     projection_symbol = first_case_slot.projection_symbol,
+    projection_config = first_case_slot.projection_config,
     dimension = first_case_slot.dimension,
     mapping_status = first_case_slot.mapping_status,
-    choice_reason = "Smallest honest runway: compact helper, identity projection, and a residual that can be checked directly on a simple initialization.",
+    choice_reason = "Best verified runway: exact paper-list helper match, explicit positive-orthant projection, and a residual that can be checked directly on a simple nonnegative initialization.",
     paper_mapping_boundary = first_case_slot.verification_boundary,
 )
 
@@ -251,9 +324,9 @@ first_case_projection = getfield(@__MODULE__, first_case_choice.projection_symbo
 first_case_unit = let
     n = first_case_choice.dimension
     x0 = ones(Float64, n)
-    projected_x0 = first_case_projection(x0)
+    projected_x0 = first_case_projection(x0; first_case_choice.projection_config...)
     residual = first_case_problem(projected_x0)
-    expected_entry = sin(1.0)
+    expected_entry = exp(1.0) - 1.0
     (
         n = n,
         x0 = x0,
@@ -261,12 +334,14 @@ first_case_unit = let
         residual = residual,
         residual_norm = sqrt(sum(abs2, residual)),
         expected_entry = expected_entry,
+        projection_bounds = first_case_choice.projection_config.bounds,
     )
 end
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000e0
 first_case_validation = (
-    projection_is_identity = first_case_unit.projected_x0 == first_case_unit.x0,
+    projected_point_is_feasible = minimum(first_case_unit.projected_x0) >= first_case_unit.projection_bounds[1],
+    projection_is_identity_on_positive_x0 = first_case_unit.projected_x0 == first_case_unit.x0,
     residual_length_matches_dimension = length(first_case_unit.residual) == first_case_unit.n,
     residual_entries_match_expected_value = all(isapprox.(first_case_unit.residual, first_case_unit.expected_entry; atol = 1e-12)),
     residual_norm_is_finite = isfinite(first_case_unit.residual_norm) && first_case_unit.residual_norm > 0,
@@ -280,9 +355,10 @@ The notebook can already make these claims directly from the paper and the helpe
 
 - Experiment 1 is the intended anchor.
 - The paper fixes the solver parameters, tolerance, safeguard, dimensions, and comparison methods.
+- The extracted Experiment 1 list now verifies exact helper-name matches for rows 2-12 and explicitly identifies `ExponetialI` as row 2 with `R_n^+`.
 - The repository now provides local problem and projection definitions relevant to the monotone-equation setting.
 
-The notebook should not yet claim one exact manuscript benchmark row unless the helper names have been crosswalked carefully to the paper's Experiment 1 table.
+The notebook should still avoid overclaiming rows that remain outside the current extraction or any algorithm-level result that has not yet been run.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000e
@@ -292,6 +368,7 @@ assumption_register = (
         "Dimensions are 10^3, 10^4, and 10^5.",
         "Stopping tolerance is 10^-11 with a k > 2000 safeguard.",
         "STTDFPM and ISTTDFPM are the primary methods, compared against MOPCG, CGDFPM, and AHDFPM.",
+        "The extracted Experiment 1 list verifies rows 2-12 by exact helper name, and row 2 explicitly carries the `R_n^+` constraint.",
     ),
     fixed_from_repository = (
         "refs/problems.jl exists inside this branch.",
@@ -299,8 +376,8 @@ assumption_register = (
         "The helper files expose concrete Julia function definitions for benchmark problems and projection operators through repo-local paths.",
     ),
     still_open_but_explicit = (
-        "The crosswalk now records candidate paper-to-helper mappings, but not every Experiment 1 row is verified yet.",
-        "The first local benchmark case is represented explicitly as a candidate slot rather than a finished verified benchmark row.",
+        "The crosswalk now records exact verified rows where the extraction supports them, but not every Experiment 1 row is verified yet.",
+        "The first local benchmark case is represented explicitly as a verified paper row for helper name and projection family, not as a finished reproduced benchmark run.",
         "The manuscript reports suite-level performance profiles, so any local table or per-case result must still be labeled as a workshop reproduction choice unless the mapping is confirmed.",
     ),
 )
@@ -314,14 +391,14 @@ This scaffold is intentionally narrow.
 - It documents the paper and the experiment before any algorithm cell is added.
 - It proves the helper definitions are available locally.
 - It records a concrete crosswalk structure for paper labels, helper symbols, projections, dimensions, and mapping status.
-- It now contains one small executable first-case unit: initialize `x0`, apply the chosen projection, evaluate the residual, and validate that result before scaling.
+- It now contains one small executable verified first-case unit: initialize `x0`, apply the explicit positive-orthant projection, evaluate the residual, and validate that result before scaling.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Confirm or correct the candidate crosswalk row that will become the first benchmark case.",
-        "Use the residual-evaluation unit to define the next step-ready state bundle for the chosen case.",
+        "Use the verified `ExponetialI` case to define the next step-ready state bundle.",
+        "Add one small state update or feasibility-preserving preparation step for that same case.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -336,7 +413,7 @@ workflow_prompt = raw"""
 Restate Ibrahim 2023 Experiment 1 in plain language.
 List which quantities are fixed by the paper and which choices are still local.
 Use the helper problem and projection definitions already loaded in this notebook.
-Use the crosswalk rows and the first-case slot to pick the next smallest implementation unit.
+Use the verified `ExponetialI` first-case slot and its explicit projection config to pick the next smallest implementation unit.
 Do not expand into suite-wide benchmarking until the first case mapping is verified.
 """
 
@@ -363,8 +440,8 @@ validation_targets = (
     experiment_anchor_is_correct = experiment_definition.anchor_experiment == 1,
     paper_parameters_recorded = !isempty(keys(paper_fixed_choices.parameters)),
     open_choices_recorded = !isempty(assumption_register.still_open_but_explicit),
-    crosswalk_present = !isempty(crosswalk_rows) && crosswalk_summary.mapped_symbols_defined,
-    first_case_slot_present = first_case_slot.mapping_status in (:candidate, :verified),
+    crosswalk_present = !isempty(crosswalk_rows) && crosswalk_summary.mapped_problem_symbols_defined && crosswalk_summary.mapped_projection_symbols_defined,
+    first_case_slot_present = first_case_slot.mapping_status == :verified_from_pdftotext,
     first_case_unit_validated = all(values(first_case_validation)),
 )
 
