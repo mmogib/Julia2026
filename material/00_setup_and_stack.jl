@@ -12,12 +12,6 @@ md"""
 
 This notebook sets up the workshop workflow before we touch the main paper reproduction.
 
-The workshop follows the approved paper direction:
-
-- notebook 01 teaches the AI-assisted Julia loop on a small academic example
-- notebook 02 reproduces the compressed-sensing experiment from Ibrahim et al. (2023)
-- notebook 03 extends that reproduction into benchmarking
-
 This notebook is intentionally practical. It covers the environment, Pluto's reactive model, Codex discipline, common failure modes, plotting, and the reproducibility habits we will use everywhere else.
 """
 
@@ -27,10 +21,10 @@ md"""
 
 - confirm the workshop environment before the live coding starts
 - understand how Pluto's reactive cells change the way we work
-- keep Codex prompts small, testable, and paper-grounded
+- keep Codex prompts small, testable, and explicit
 - know the failure modes that matter in AI-assisted scientific coding
 - verify plotting and package availability early
-- separate setup checks from the later reproduction and benchmark work
+- leave the paper-specific details for the later notebooks
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000003
@@ -73,21 +67,33 @@ For the later notebooks, that means the reproduction steps can stay small and in
 
 # ╔═╡ 00000000-0000-0000-0000-000000000005
 md"""
-### Tiny Reactive Example
+### Copyable Workflow Template
 
-This is only a teaching example, but it shows the mental model we want in the workshop.
+This is the pattern to copy later: inputs, computation, check, interpretation.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000006
-base_points = 6
-extra_checks = 2
-total_checks = base_points + extra_checks
+workflow_inputs = (; x0 = 1.0, target = 2.0)
+workflow_result = let
+    f(x) = x^2 - workflow_inputs.target
+    x1 = workflow_inputs.x0 - f(workflow_inputs.x0) / (2 * workflow_inputs.x0)
+    residual0 = abs(f(workflow_inputs.x0))
+    residual1 = abs(f(x1))
+    check = isapprox(x1, 1.5; atol = 1e-12) && residual1 <= 0.3 * residual0
+    interpretation = check ? "One Newton step moved closer to the target and cut the residual." : "The update did not pass the sanity check."
+    (; x1, residual0, residual1, check, interpretation)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000007
 md"""
-The value in `total_checks` depends on the earlier cells. If you change `base_points`, Pluto updates the derived cell automatically.
+The result is intentionally small but complete:
 
-That same pattern is what we want later when notebook 02 rebuilds the Ibrahim experiment from explicit inputs, parameters, and validation steps.
+- inputs are written down
+- the computation is explicit
+- the check is meaningful
+- the interpretation explains what the check means
+
+That is the shape we want in every later notebook cell.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000008
@@ -120,7 +126,7 @@ Write the smallest Julia unit that can be tested now.
 Do not expand into benchmarking or plotting until this step is validated.
 ```
 
-This is the same discipline we will use in notebook 02 when the target is the Ibrahim compressed-sensing experiment.
+This is the same discipline we will use in the later notebooks.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-00000000000a
@@ -141,34 +147,12 @@ The antidote is boring but reliable: extract assumptions, verify small units, an
 
 # ╔═╡ 00000000-0000-0000-0000-00000000000b
 md"""
-## Paper Route For This Workshop
+## Later Notebooks
 
-The notebook sequence is anchored on Ibrahim et al. (2023).
+The case-study notebook will use Ibrahim et al. (2023) as the main paper example.
 
-- notebook 02 reproduces the compressed-sensing experiment from the paper
-- notebook 03 uses the paper's benchmark suite as the extension layer
-
-This notebook only records the route. It does not reproduce the paper yet.
+Notebook 00 stops at setup, orientation, and workflow templates. The paper-specific assumptions, numbers, and benchmark details belong in the later notebooks where they can be validated in context.
 """
-
-# ╔═╡ 00000000-0000-0000-0000-00000000000c
-paper_route = (
-    paper = "Ibrahim et al. (2023)",
-    primary_target = "Experiment 2 compressed sensing reproduction",
-    extension_target = "Experiment 1 benchmark suite",
-)
-
-# ╔═╡ 00000000-0000-0000-0000-00000000000d
-experiment_contract = (
-    n = 2^11,
-    m = 2^9,
-    nonzeros = 27,
-    trials = 100,
-    noise_sigma = 0.01,
-)
-
-# ╔═╡ 00000000-0000-0000-0000-00000000000e
-experiment_contract.m < experiment_contract.n
 
 # ╔═╡ 00000000-0000-0000-0000-00000000000f
 md"""
@@ -237,8 +221,8 @@ Keep the following habits visible in every notebook:
 - use small executable checks before scaling up
 - record mismatches with the paper immediately
 - keep benchmark claims tied to a concrete metric and a concrete setup
-
-For the Ibrahim reproduction path, that means notebook 02 should preserve the exact experiment settings that matter and notebook 03 should state what is being timed or compared.
+ 
+The later notebooks will carry the paper-specific parameters and benchmark definitions.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000016
@@ -249,10 +233,7 @@ This final smoke test is a tiny example of the validate-before-scale workflow.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000017
-f(x) = x^2 - 2
-x0 = 1.0
-x1 = x0 - f(x0) / (2x0)
-isapprox(x1, sqrt(2); atol = 0.5)
+workflow_result.check
 
 # ╔═╡ 00000000-0000-0000-0000-000000000018
 md"""
@@ -264,7 +245,7 @@ By the end of this notebook, participants should be ready to:
 - ask Codex for small, testable Julia units
 - check the environment before writing workshop code
 - recognize when AI output is plausible but not yet validated
-- move into notebook 01 with the right workflow discipline
+- move into the next notebook with the right workflow discipline
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000019
