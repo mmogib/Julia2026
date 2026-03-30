@@ -44,7 +44,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 
 ### Ibrahim2023 spectral three-term derivative-free
 
-- Problem type: derivative-free projection methods for large-scale systems of nonlinear equations, with an optional compressed-sensing application.
+- Problem type: derivative-free projection methods for large-scale systems of nonlinear equations, with a compressed-sensing application that now serves as the concrete workshop reproduction target.
 - Core algorithmic ingredients: STTDFPM and ISTTDFPM, line search, projection, sufficient-descent and trust-region properties, and comparison against MOPCG, CGDFPM, and AHDFPM.
 - Numerical experiment metadata grounded in the paper:
   - The implementation was written in Julia `1.8.5` and run on an Intel i9-9900K with 32 GB RAM.
@@ -136,7 +136,7 @@ Current grounded position:
 
 ## Selection Verification
 
-- Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format and keeps benchmarking as the primary story.
+- Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format by anchoring notebook 02 on one concrete compressed-sensing reproduction and reserving benchmarking for notebook 03.
 - Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite evaluation, and a concrete compressed-sensing application with stated dimensions and metrics.
 - Canonical-target check: notebook 02 is now anchored to Experiment 2, while Experiment 1 is explicitly scoped as the benchmark extension layer rather than the primary anchor.
 - Rejection-scope check: both rejected papers are rejected for workshop-scope reasons grounded in the papers themselves, not for lack of academic quality.
