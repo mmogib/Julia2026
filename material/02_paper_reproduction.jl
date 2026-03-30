@@ -486,6 +486,50 @@ first_case_correction_validation = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000eb
 md"""
+## First Single-Iteration Update
+
+The next bounded unit is one explicit demonstrated update for the verified first case.
+
+At this stage the notebook promotes the current projected correction candidate to a concrete
+`x1`, evaluates `F(x1)`, and compares the updated residual against the starting state.
+
+This is still not a general loop. It is one worked iteration artifact for the chosen initialization.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000ec
+first_case_iteration_unit = let
+    x1 = first_case_correction_unit.corrected_candidate
+    F1 = first_case_problem(x1)
+    residual_norm_0 = first_case_unit.residual_norm
+    residual_norm_1 = sqrt(sum(abs2, F1))
+    residual_change = residual_norm_1 - residual_norm_0
+    residual_ratio = residual_norm_1 / residual_norm_0
+    (
+        x1 = x1,
+        F1 = F1,
+        residual_norm_0 = residual_norm_0,
+        residual_norm_1 = residual_norm_1,
+        residual_change = residual_change,
+        residual_ratio = residual_ratio,
+        iterate_changed = x1 != first_case_unit.projected_x0,
+        residual_decreased = residual_norm_1 < residual_norm_0,
+        summary = residual_norm_1 < residual_norm_0 ?
+            "This demonstrated first update reduces the residual norm at the chosen initialization." :
+            "This demonstrated first update does not reduce the residual norm at the chosen initialization.",
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000ed
+first_case_iteration_validation = (
+    updated_iterate_is_feasible = minimum(first_case_iteration_unit.x1) >= first_case_unit.projection_bounds[1],
+    updated_residual_length_matches_dimension = length(first_case_iteration_unit.F1) == first_case_unit.n,
+    updated_residual_norm_is_finite = isfinite(first_case_iteration_unit.residual_norm_1),
+    residual_comparison_is_finite = isfinite(first_case_iteration_unit.residual_change) && isfinite(first_case_iteration_unit.residual_ratio),
+    iterate_change_flag_is_consistent = first_case_iteration_unit.iterate_changed == (first_case_iteration_unit.x1 != first_case_unit.projected_x0),
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000ee
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -532,12 +576,13 @@ This scaffold is intentionally narrow.
 - It now contains one small STTDFPM-specific state unit: use the paper's `t`, form `d0 = -F(x0)`, build a projected trial point, and validate that state before any line search logic is added.
 - It now contains one small line-search condition unit: evaluate a single sufficient-descent inequality at the current trial point and report whether it passes at the chosen initialization.
 - It now contains one small correction-step unit: derive `rho0`, derive the scalar correction coefficient, form one projected correction candidate, and validate those quantities without yet claiming a full next iterate.
+- It now contains one demonstrated single-iteration update unit: set `x1` equal to the current correction candidate, evaluate `F(x1)`, and compare the before/after residual norms without claiming a general convergence result.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Decide whether the next unit should promote the correction candidate into an explicit next-iterate claim or add one more paper-specific condition around it.",
+        "Decide whether the next unit should add one more paper-specific condition around the demonstrated `x1` update or start isolating reusable iteration helpers.",
         "Keep the next unit tied to the same verified `ExponetialI` state bundle.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
@@ -575,6 +620,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook contains one small STTDFPM-specific state unit with a visible validation check
 - the notebook contains one small line-search condition unit with a visible validation check
 - the notebook contains one small correction-step unit with a visible validation check
+- the notebook contains one demonstrated single-iteration update unit with a visible validation check
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -590,6 +636,7 @@ validation_targets = (
     first_case_sttdfpm_state_validated = all(values(first_case_sttdfpm_validation)),
     first_case_line_search_validated = all(values(first_case_line_search_validation)),
     first_case_correction_validated = all(values(first_case_correction_validation)),
+    first_case_iteration_validated = all(values(first_case_iteration_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -605,15 +652,16 @@ notebook_verification_summary = (
     first_case_sttdfpm_state_validated = validation_targets.first_case_sttdfpm_state_validated,
     first_case_line_search_validated = validation_targets.first_case_line_search_validated,
     first_case_correction_validated = validation_targets.first_case_correction_validated,
+    first_case_iteration_validated = validation_targets.first_case_iteration_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, first correction-step unit, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, first correction-step unit, demonstrated first single-iteration update, and validation targets are explicit.
 
-It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully. In particular, the notebook now has a projected correction candidate, but it still does not claim a complete `x_1` update rule for the full method.
+It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully. In particular, the notebook now demonstrates one explicit `x_1` update for this initialization, but it still does not claim a general loop or a full implementation of the complete method.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000016
