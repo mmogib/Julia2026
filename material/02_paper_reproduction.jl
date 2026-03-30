@@ -393,6 +393,45 @@ first_case_sttdfpm_validation = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000e5
 md"""
+## First Line-Search Condition Unit
+
+The next smallest paper-facing unit is a single trial-point condition check on the current STTDFPM state.
+
+This notebook still does not implement the full line search. It evaluates one paper-style sufficient-descent inequality at the current trial point:
+
+```math
+-F(z_0)^T d_0 \ge \sigma \, t \, \|d_0\|^2
+```
+
+That gives a visible pass/fail result for the chosen initialization without claiming that the complete acceptance procedure is implemented.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e6
+first_case_line_search_unit = let
+    Fz0 = first_case_problem(first_case_sttdfpm_state.projected_z0)
+    lhs = -sum(Fz0 .* first_case_sttdfpm_state.d0)
+    rhs = first_case_paper_parameters.sigma * first_case_sttdfpm_state.trial_step * sum(abs2, first_case_sttdfpm_state.d0)
+    condition_passes = lhs >= rhs
+    (
+        Fz0 = Fz0,
+        lhs = lhs,
+        rhs = rhs,
+        condition_passes = condition_passes,
+        summary = condition_passes ? "The current trial point passes this first sufficient-descent check." : "The current trial point fails this first sufficient-descent check.",
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e7
+first_case_line_search_validation = (
+    trial_residual_length_matches_dimension = length(first_case_line_search_unit.Fz0) == first_case_unit.n,
+    lhs_is_finite = isfinite(first_case_line_search_unit.lhs),
+    rhs_is_finite = isfinite(first_case_line_search_unit.rhs),
+    rhs_is_nonnegative = first_case_line_search_unit.rhs >= 0,
+    condition_evaluated = first_case_line_search_unit.condition_passes == (first_case_line_search_unit.lhs >= first_case_line_search_unit.rhs),
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e8
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -437,13 +476,14 @@ This scaffold is intentionally narrow.
 - It records a concrete crosswalk structure for paper labels, helper symbols, projections, dimensions, and mapping status.
 - It now contains one small executable verified first-case unit: initialize `x0`, apply the explicit positive-orthant projection, evaluate the residual, and validate that result before scaling.
 - It now contains one small STTDFPM-specific state unit: use the paper's `t`, form `d0 = -F(x0)`, build a projected trial point, and validate that state before any line search logic is added.
+- It now contains one small line-search condition unit: evaluate a single sufficient-descent inequality at the current trial point and report whether it passes at the chosen initialization.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
         "Use the verified `ExponetialI` case to extend the step-ready state into one more paper-specific quantity after the current trial point.",
-        "Add one small geometry or residual check tied to that same state bundle.",
+        "Decide whether the next unit should be a corrected trial-point update or a second condition check tied to that same state bundle.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -459,7 +499,7 @@ Restate Ibrahim 2023 Experiment 1 in plain language.
 List which quantities are fixed by the paper and which choices are still local.
 Use the helper problem and projection definitions already loaded in this notebook.
 Use the verified `ExponetialI` first-case slot and its explicit projection config to pick the next smallest implementation unit.
-Keep the unit small: parameter bundle, direction, trial point, or one geometry check is enough.
+Keep the unit small: parameter bundle, direction, trial point, one condition check, or one geometry check is enough.
 Do not expand into suite-wide benchmarking until the first case mapping is verified.
 """
 
@@ -478,6 +518,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook contains a concrete crosswalk and a first-case candidate slot
 - the notebook contains one small executable unit with a visible pass/fail validation check
 - the notebook contains one small STTDFPM-specific state unit with a visible validation check
+- the notebook contains one small line-search condition unit with a visible validation check
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -491,6 +532,7 @@ validation_targets = (
     first_case_slot_present = first_case_slot.mapping_status == :verified_from_pdftotext,
     first_case_unit_validated = all(values(first_case_validation)),
     first_case_sttdfpm_state_validated = all(values(first_case_sttdfpm_validation)),
+    first_case_line_search_validated = all(values(first_case_line_search_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -504,13 +546,14 @@ notebook_verification_summary = (
     first_case_slot_present = validation_targets.first_case_slot_present,
     first_case_unit_validated = validation_targets.first_case_unit_validated,
     first_case_sttdfpm_state_validated = validation_targets.first_case_sttdfpm_state_validated,
+    first_case_line_search_validated = validation_targets.first_case_line_search_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, and validation targets are explicit.
 
 It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully.
 """
