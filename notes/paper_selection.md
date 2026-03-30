@@ -11,7 +11,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 
 | Criterion | Weight | What Good Looks Like |
 | --- | ---: | --- |
-| Numerical experiment clarity | 5 | The paper states inputs, parameters, outputs, and evaluation metrics clearly enough to reproduce one target result without guesswork. |
+| Numerical experiment clarity | 5 | The paper states inputs, parameters, outputs, and evaluation metrics clearly enough to reproduce one target result without avoidable guesswork. |
 | Implementation complexity | 5 | A clean baseline version can be coded during a two-session workshop without specialized infrastructure. |
 | Validation tractability | 5 | Results can be checked with small tests, tables, plots, or known qualitative trends. |
 | Benchmark extension potential | 4 | The implementation can be extended into runtime, accuracy, or scaling comparisons without redesigning the core method. |
@@ -24,7 +24,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 | Candidate | Source | Experiment Target | Complexity | Benchmark Potential | Risks | Decision |
 | --- | --- | --- | --- | --- | --- | --- |
 | `aFairagShahraniTawfiq2016SIAMJMATRIX` | `refs/895 - aFairagShahraniTawfiq2016SIAMJMATRIX.pdf` | Lowest-order Raviart-Thomas Darcy discretization on rectangular grids, comparing the proposed block-triangular preconditioner with `Pdiv` through eigenvalue clustering, PHCG residual histories, and GMRES iteration counts. | High | Medium-High | Requires mixed FEM assembly, H(div) spaces, Schur-complement/preconditioner reasoning, and nonstandard-inner-product Krylov logic before the benchmarking story even starts. | Reject |
-| `Ibrahim2023 spectral three-term derivative-free` | `refs/Ibrahim et al. - 2023 - Two classes of spectral three-term derivative-free.pdf` | Julia implementation of STTDFPM anchored on the compressed-sensing application from Experiment 2, with Experiment 1's 12-problem suite reserved for later benchmark extension work. | Medium | High | Experiment 1 is still not specific enough in the manuscript to serve as the workshop anchor by itself, so the note must keep the benchmark-suite story as a follow-on rather than the primary reproduction. | Keep |
+| `Ibrahim2023 spectral three-term derivative-free` | `refs/Ibrahim et al. - 2023 - Two classes of spectral three-term derivative-free.pdf` | Julia reproduction scaffold anchored on Experiment 1's large-scale monotone-equation suite, using the paper's stated algorithmic parameters and the local helper definitions in `refs/problems.jl` and `refs/projections.jl` to stay as close as possible to the manuscript. | Medium | High | The manuscript reports Experiment 1 mainly through performance profiles, so the notebook must distinguish paper-fixed parameters from still-open benchmark-case mapping choices. | Keep |
 | `NMS_DEED_MPSGrid_DR` | `refs/NMS_DEED_MPSGrid_DR.pdf` | SGSD-DEED model progression, IEEE 30-bus DC-OPF validation, customer-scaling studies, sensitivity analysis, Pareto fronts, and Saudi case-study comparisons. | Very High | High | Rich benchmarking, but the optimization model surface is too large for a workshop-first implementation and would push the session toward model comprehension rather than disciplined reproduction workflow. | Reject |
 
 ## Candidate Reviews
@@ -44,18 +44,20 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 
 ### Ibrahim2023 spectral three-term derivative-free
 
-- Problem type: derivative-free projection methods for large-scale systems of nonlinear equations, with a compressed-sensing application that now serves as the concrete workshop reproduction target.
+- Problem type: derivative-free projection methods for large-scale systems of nonlinear equations with convex constraints.
 - Core algorithmic ingredients: STTDFPM and ISTTDFPM, line search, projection, sufficient-descent and trust-region properties, and comparison against MOPCG, CGDFPM, and AHDFPM.
 - Numerical experiment metadata grounded in the paper:
   - The implementation was written in Julia `1.8.5` and run on an Intel i9-9900K with 32 GB RAM.
   - Experiment 1 evaluates 12 named benchmark problems across dimensions `n = 10^3, 10^4, 10^5`.
   - The paper specifies 14 initial-point families, a stopping tolerance `epsilon = 10^-11`, a `k > 2000` safeguard, and explicit STTDFPM/ISTTDFPM parameter values: `t = 0.11`, `beta = 0.5`, `sigma = 0.01`, `gamma = 1.8`, `alpha_min = 10^-10`, `alpha_max = 10^30`, `r = 0.1`, `psi = 0.2`, `eta_1 = 0.001`, `eta_2 = 0.6`.
-  - Experiment 1 reports only performance profiles in the manuscript; the paper explicitly points readers to an external repository for detailed numerical experiments.
-  - Experiment 2 is more concrete in-paper: compressed sensing with randomly generated `A`, Gaussian noise `N(0, 0.01)`, `n = 2^11`, `m = 2^9`, `27` nonzeros in the original signal, `100` trials, and average MSE reported for four methods.
-- Inputs/data required: benchmark-problem definitions or one application formulation, starting vectors, stopping rules, and comparison metrics.
-- Validation surface: good once framed correctly. The compressed-sensing experiment gives a concrete paper-only reproduction target, while Experiment 1 supports later benchmarking trends rather than the initial anchor.
-- Workshop fit assessment: best match for the approved design because notebook 02 can reproduce one bounded in-text experiment, notebook 03 can extend into benchmarking, and sensitivity can remain secondary.
-- Canonical-target assessment: the workshop anchor should be Experiment 2, not a deferred Experiment 1 row. Experiment 1 remains useful, but only as a follow-on benchmark extension because the manuscript reports it at suite level and delegates detailed numerics to external materials.
+  - The manuscript reports Experiment 1 primarily through performance profiles and points readers to an external repository for detailed numerical experiments.
+- Local availability update that changes the workshop calculus:
+  - `refs/problems.jl` and `refs/projections.jl` now exist in the main repository root.
+  - Those helper files materially reduce setup risk because they provide local problem and projection definitions that align with the monotone-equation benchmark family used by the paper.
+  - The helpers are strong enough to anchor notebook 02 on Experiment 1 without pretending that every manuscript problem name has already been crosswalked one-to-one inside the workshop repo.
+- Validation surface: strong enough for a workflow-first scaffold. The notebook can record the paper-fixed suite structure, load the helper-backed definitions, verify helper availability, and make the remaining benchmark-case choice explicit rather than hidden.
+- Workshop fit assessment: best match for the workshop. The notebook can stay close to Experiment 1, teach disciplined assumption extraction, and leave later runtime or profile comparisons as extensions once the base scaffold is stable.
+- Canonical-target assessment: Experiment 1 should be the anchor. The honest boundary is that the paper fixes the suite, dimensions, stopping rules, and algorithm parameters, while the exact local benchmark-case mapping still needs verification against the helper names.
 
 ### NMS_DEED_MPSGrid_DR
 
@@ -86,24 +88,23 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 
 ### Why This Fits
 
-- It preserves the workshop's workflow-first shape: implement a compact numerical method, run it, inspect stopping behavior, and then extend into benchmarking once the base reproduction is stable.
+- It preserves the workshop's workflow-first shape: extract assumptions, load the relevant helper definitions, implement a compact numerical method, and only then extend into broader benchmarking.
 - The paper is already grounded in Julia, which lowers translation overhead for a Codex-assisted workshop.
-- The manuscript gives one concrete paper-only reproduction target in Experiment 2, which is exactly what notebook 02 needs.
-- Benchmarking still belongs in the workshop design, but as notebook 03: Experiment 1's suite-level material is better used as the extension layer after the primary reproduction is working.
-- Validation can stay lightweight and explicit, which matches the approved mixed hands-on format better than either FEM infrastructure or large nonlinear energy models.
+- The paper's Experiment 1 is now practical as the notebook 02 anchor because the local helper files provide directly usable problem and projection definitions.
+- Validation can stay lightweight and explicit: helper availability, parameter capture, suite-definition honesty, and benchmark-case mapping notes are all visible in the notebook artifact itself.
 
 ### Bounded Workshop Claim
 
-The workshop should use `Ibrahim2023` with a concrete primary target and a separate benchmark extension path.
+The workshop should use `Ibrahim2023` with **Experiment 1 as notebook 02's anchor**.
 
-Primary reproduction target for notebook 02:
+Notebook 02 should:
 
-- reproduce the compressed-sensing application from Experiment 2 using the in-text settings `n = 2^11`, `m = 2^9`, `27` nonzeros, Gaussian noise `N(0, 0.01)`, `100` trials, and MSE comparison against the baseline methods
+- define the paper, the experiment, and the algorithm parameters exactly as stated in the manuscript
+- load `refs/problems.jl` and `refs/projections.jl` from the main repository root instead of duplicating them into the notebook
+- record the helper-backed benchmark inventory that is available locally
+- state explicitly which parts of Experiment 1 are fixed by the paper and which remaining choices still need verification against the local helper naming
 
-Benchmark extension for notebook 03:
-
-- use Experiment 1's 12-problem suite as the follow-on benchmarking layer once the primary implementation is stable
-- treat the manuscript's performance profiles as trend targets, not as a paper-only canonical single-case anchor
+Benchmark extension work can still follow later, but the primary framing is no longer a compressed-sensing reproduction.
 
 ## Rejected Candidates
 
@@ -121,22 +122,24 @@ Benchmark extension for notebook 03:
 
 ### Canonical Target Selection
 
-The primary workshop reproduction target is **selected** from the paper text alone.
+The primary workshop reproduction target is selected from the paper text plus the helper definitions now available in the repository.
 
 Current grounded position:
 
 - `Ibrahim2023` is the correct paper to build around.
-- Notebook 02 should anchor on Experiment 2, because the manuscript states the compressed-sensing setup in enough detail to define one bounded reproduction target without guessing.
-- Notebook 03 should handle Experiment 1 as the benchmark extension layer, because the manuscript gives suite-level trends there but not one privileged in-paper benchmark row.
+- Notebook 02 should anchor on Experiment 1, not on the compressed-sensing application from Experiment 2.
+- The paper fixes the suite-level structure: 12 benchmark problems, dimensions `10^3`, `10^4`, `10^5`, 14 initial-point families, stopping tolerance `10^-11`, the `k > 2000` safeguard, and the reported STTDFPM/ISTTDFPM parameters.
+- `refs/problems.jl` and `refs/projections.jl` are the local bridge that makes this anchor practical.
+- The exact one-to-one mapping from manuscript problem names to local helper names should remain explicit in the notebook until it is verified, rather than being silently guessed.
 
 ### Later Extensions
 
-- expand from the Experiment 2 reproduction to a small Experiment 1 benchmark panel once the first implementation is stable
-- add runtime and function-evaluation benchmarking against one or two baseline methods after the core reproduction is verified
+- add one or more verified helper-backed benchmark cases once the paper-to-helper mapping is checked carefully
+- extend from the notebook scaffold into runtime, function-evaluation, or profile comparisons after the core Experiment 1 framing is stable
 
 ## Selection Verification
 
-- Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format by anchoring notebook 02 on one concrete compressed-sensing reproduction and reserving benchmarking for notebook 03.
-- Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite evaluation, and a concrete compressed-sensing application with stated dimensions and metrics.
-- Canonical-target check: notebook 02 is now anchored to Experiment 2, while Experiment 1 is explicitly scoped as the benchmark extension layer rather than the primary anchor.
-- Rejection-scope check: both rejected papers are rejected for workshop-scope reasons grounded in the papers themselves, not for lack of academic quality.
+- Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format by anchoring notebook 02 on Experiment 1 and using the helper files to keep setup bounded.
+- Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite dimensions, stopping rules, and algorithm parameters.
+- Helper-availability check: the repository now contains `refs/problems.jl` and `refs/projections.jl`, which changes Experiment 1 from a speculative benchmark extension into a realistic notebook anchor.
+- Honesty check: the note no longer treats Experiment 2 as the primary target, and it does not overclaim a fully verified paper-to-helper benchmark-case mapping where that mapping still needs confirmation.
