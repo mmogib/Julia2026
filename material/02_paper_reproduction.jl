@@ -432,6 +432,60 @@ first_case_line_search_validation = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000e8
 md"""
+## First Correction Step Unit
+
+The next smallest STTDFPM-structured unit is the projection/hyperplane-style correction built from the current trial point.
+
+At this stage the notebook still does not claim a full `x_0 -> x_1` method update. It only computes the derived quantities needed for the correction:
+
+```math
+\rho_0 = F(z_0)^T (x_0 - z_0), \qquad
+\lambda_0 = \rho_0 / \|F(z_0)\|^2
+```
+
+and then forms one projected correction candidate using the current feasible point and `F(z_0)`.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e9
+first_case_correction_unit = let
+    x0 = first_case_unit.projected_x0
+    z0 = first_case_sttdfpm_state.projected_z0
+    Fz0 = first_case_line_search_unit.Fz0
+    rho0 = sum(Fz0 .* (x0 .- z0))
+    Fz0_norm_sq = sum(abs2, Fz0)
+    lambda0 = rho0 / Fz0_norm_sq
+    correction_direction = lambda0 .* Fz0
+    corrected_candidate = first_case_projection(x0 .- correction_direction; first_case_choice.projection_config...)
+    (
+        x0 = x0,
+        z0 = z0,
+        Fz0 = Fz0,
+        rho0 = rho0,
+        Fz0_norm_sq = Fz0_norm_sq,
+        lambda0 = lambda0,
+        correction_direction = correction_direction,
+        corrected_candidate = corrected_candidate,
+        corrected_candidate_minimum = minimum(corrected_candidate),
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000ea
+first_case_correction_validation = (
+    rho0_is_finite = isfinite(first_case_correction_unit.rho0),
+    rho0_is_positive = first_case_correction_unit.rho0 > 0,
+    correction_scale_is_finite = isfinite(first_case_correction_unit.lambda0) && first_case_correction_unit.lambda0 > 0,
+    corrected_candidate_is_feasible = first_case_correction_unit.corrected_candidate_minimum >= first_case_unit.projection_bounds[1],
+    correction_direction_matches_formula = all(
+        isapprox.(
+            first_case_correction_unit.correction_direction,
+            first_case_correction_unit.lambda0 .* first_case_correction_unit.Fz0;
+            atol = 1e-12,
+        ),
+    ),
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000eb
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -477,13 +531,14 @@ This scaffold is intentionally narrow.
 - It now contains one small executable verified first-case unit: initialize `x0`, apply the explicit positive-orthant projection, evaluate the residual, and validate that result before scaling.
 - It now contains one small STTDFPM-specific state unit: use the paper's `t`, form `d0 = -F(x0)`, build a projected trial point, and validate that state before any line search logic is added.
 - It now contains one small line-search condition unit: evaluate a single sufficient-descent inequality at the current trial point and report whether it passes at the chosen initialization.
+- It now contains one small correction-step unit: derive `rho0`, derive the scalar correction coefficient, form one projected correction candidate, and validate those quantities without yet claiming a full next iterate.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Use the verified `ExponetialI` case to extend the step-ready state into one more paper-specific quantity after the current trial point.",
-        "Decide whether the next unit should be a corrected trial-point update or a second condition check tied to that same state bundle.",
+        "Decide whether the next unit should promote the correction candidate into an explicit next-iterate claim or add one more paper-specific condition around it.",
+        "Keep the next unit tied to the same verified `ExponetialI` state bundle.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -519,6 +574,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook contains one small executable unit with a visible pass/fail validation check
 - the notebook contains one small STTDFPM-specific state unit with a visible validation check
 - the notebook contains one small line-search condition unit with a visible validation check
+- the notebook contains one small correction-step unit with a visible validation check
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -533,6 +589,7 @@ validation_targets = (
     first_case_unit_validated = all(values(first_case_validation)),
     first_case_sttdfpm_state_validated = all(values(first_case_sttdfpm_validation)),
     first_case_line_search_validated = all(values(first_case_line_search_validation)),
+    first_case_correction_validated = all(values(first_case_correction_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -547,15 +604,16 @@ notebook_verification_summary = (
     first_case_unit_validated = validation_targets.first_case_unit_validated,
     first_case_sttdfpm_state_validated = validation_targets.first_case_sttdfpm_state_validated,
     first_case_line_search_validated = validation_targets.first_case_line_search_validated,
+    first_case_correction_validated = validation_targets.first_case_correction_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, first correction-step unit, and validation targets are explicit.
 
-It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully.
+It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully. In particular, the notebook now has a projected correction candidate, but it still does not claim a complete `x_1` update rule for the full method.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000016
