@@ -96,15 +96,19 @@ The workshop will reproduce one representative benchmark comparison from the pap
 
 ## Workshop Experiment Target
 
-### Primary Reproduction Target
+### Canonical Target Selection
 
-- selected figure/table: one benchmark comparison table row for iterations, function evaluations, and CPU time.
-- exact claim we want to reproduce: the Julia implementation matches the paper's reported trend on one representative benchmark problem under the stated stopping tolerance.
-- required inputs and parameters: the chosen benchmark function, its initial guess, the stopping tolerance, and the algorithm parameters used for that one run.
-- acceptance criteria for a successful workshop reproduction: one benchmark problem solves correctly and the comparison metrics are computed in Julia.
+The exact canonical benchmark row or table entry will be chosen in Task 2 after the paper is read in detail.
+
+The Task 2 choice should satisfy all of the following:
+
+- narrow enough to reproduce in a four-hour workshop
+- reproducible from the paper's stated inputs, stopping rule, and comparison metrics
+- representative of the method's behavior without requiring the full paper suite
+- suitable for a later benchmark extension once the first reproduction is stable
 
 ### Later Extensions
 
-- sparse-signal recovery MSE table.
-- optional expansion to multiple benchmark problems after the primary reproduction is stable.
-- broader runtime comparisons once the single-case reproduction is verified.
+- sparse-signal recovery MSE table
+- optional expansion to multiple benchmark problems after the canonical benchmark is stable
+- broader runtime comparisons once the chosen single-case reproduction is verified
