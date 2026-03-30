@@ -134,3 +134,10 @@ Current grounded position:
 - reproduce one compressed-sensing application run using the paper's in-text settings (`n = 2^11`, `m = 2^9`, `100` trials, MSE comparison) if the workshop needs a secondary application
 - expand from one benchmark case to a small benchmark panel once the first implementation is stable
 - add runtime and function-evaluation benchmarking against one or two baseline methods after the core reproduction is verified
+
+## Selection Verification
+
+- Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format and keeps benchmarking as the primary story.
+- Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite evaluation, and a concrete compressed-sensing application with stated dimensions and metrics.
+- Canonical-target check: the exact workshop benchmark remains deferred because the manuscript reports suite-level performance profiles and points detailed per-problem numerics to external materials.
+- Rejection-scope check: both rejected papers are rejected for workshop-scope reasons grounded in the papers themselves, not for lack of academic quality.
