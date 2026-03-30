@@ -20,13 +20,15 @@ Participants are expected to:
 
 The workshop is not an introduction to programming from scratch.
 
-## Working Branch
+## Repository State
 
-Active implementation work has been done in the git worktree:
+The workshop material has been merged into `main`.
+
+The historical git worktree used for isolated implementation was:
 
 - `./.worktrees/workshop-material-build`
 
-Until merge, treat the worktree as the source of truth for the finished workshop material.
+The source of truth is now the main checkout.
 
 ## Current Material Layout
 
@@ -117,24 +119,22 @@ For Experiment 1 work specifically:
 - heuristic candidates must be labeled as heuristic/provisional
 - benchmark claims must stay downstream of verified case setup
 
-## Review Phase
+## Current Phase
 
-Implementation is complete enough for human review.
+The first implementation and merge phase is complete.
 
-Expected next workflow:
+The next workflow is:
 
-1. user reviews the Pluto notebooks
-2. one more revision/review pass is performed
-3. merge the `workshop-material-build` branch into `main`
+1. refine the merged notebooks in `main`
+2. improve mathematical fidelity and teaching clarity where needed
+3. prepare outward-facing workshop materials once the core notebook content stabilizes
 
-Do not start broad new implementation work unless the user asks for it after the review pass.
+The highest-priority content task is still notebook `02`.
 
-## Merge Notes
+## Immediate Next Focus
 
-Before merge, check:
+The first substantive task for the next session should be:
 
-- all intended notebooks are present
-- `material/README.md` matches the actual notebook set
-- `material/Manifest.toml` is committed
-- no accidental duplicate notes remain outside the worktree
-- any Pluto-resaved notebook files were reviewed intentionally before merge
+- strengthen `material/02_paper_reproduction.jl`
+
+That notebook is the core academic deliverable. It currently stops at a verified first case, a reusable first-step helper, and one demonstrated update. The next pass should move it closer to a fuller and clearer Experiment 1 reproduction without overclaiming results.
