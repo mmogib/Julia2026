@@ -14,7 +14,7 @@ md"""
 This notebook teaches the AI-assisted coding loop on a small numerical task:
 scalar Newton-based root finding for `F(x) = 0`.
 
-It is intentionally a bridge notebook. The point is to practice the workflow on a toy problem before moving to the Ibrahim 2023 paper and its paper-specific assumptions.
+It is intentionally a bridge notebook into the Ibrahim 2023 workflow. The point is to practice the loop on a toy problem before moving to the paper-specific assumptions.
 """
 
 # ╔═╡ 10000000-0000-0000-0000-000000000002
@@ -33,20 +33,32 @@ because the true root is known (`\sqrt{2}`), which makes validation concrete and
 """
 
 # ╔═╡ 10000000-0000-0000-0000-000000000003
+task_restatement = (
+    task = "Solve a scalar nonlinear equation F(x) = 0 with Newton's method.",
+    example = "Use F(x) = x^2 - 2 so the root is known.",
+    validation_target = "Check the final iterate against sqrt(2) and inspect the residual decay.",
+)
+
+# ╔═╡ 10000000-0000-0000-0000-000000000003a
 md"""
-## Prompt
+## Workflow Artifacts
 
-Use this exact prompt to ask Codex for the first code unit:
+These cells make the AI-assisted loop visible:
 
-```text
-Restate the scalar root-finding task in plain language.
-Write a minimal Newton solver for F(x) = 0 in Julia.
+- the task restatement is written down explicitly
+- the first prompt is narrow enough to hand to Codex
+- the returned Pluto cell is inspected against concrete outputs
+- the next prompt after validation is recorded before any scaling
+"""
+
+# ╔═╡ 10000000-0000-0000-0000-000000000003b
+first_prompt = raw"""
+Write the next Pluto cell for a scalar Newton root-finding task.
+Restate the problem in plain language.
+Implement a minimal Newton solver for F(x) = 0 in Julia.
 Keep the first version small enough to validate on F(x) = x^2 - 2.
 Return the iterate history and residuals.
 Do not introduce paper-specific details yet.
-```
-
-That prompt stays narrow on purpose. It asks for one unit, one equation, and one validation target.
 """
 
 # ╔═╡ 10000000-0000-0000-0000-000000000004
@@ -83,18 +95,26 @@ toy_dF(x) = 2x
 toy_run = newton_trace(toy_F, toy_dF, 1.0)
 
 # ╔═╡ 10000000-0000-0000-0000-000000000006
-toy_validation = (
-    expected_root = sqrt(2),
-    close_to_root = isapprox(toy_run.final_x, sqrt(2); atol = 1e-10),
-    residual_small = toy_run.final_residual <= 1e-12,
-    converged = toy_run.converged,
+toy_code_unit_inspection = (
+    inspected_unit = :newton_trace,
+    observed_outputs = (
+        xs = toy_run.xs,
+        residuals = toy_run.residuals,
+        final_x = toy_run.final_x,
+        final_residual = toy_run.final_residual,
+    ),
+    inspection_focus = (
+        "does the cell return the iterate history?",
+        "does the cell return the residuals?",
+        "does the update move toward the known root?",
+    ),
 )
 
 # ╔═╡ 10000000-0000-0000-0000-000000000006a
 toy_verification_summary = (
-    root_check_passed = toy_validation.close_to_root,
-    residual_check_passed = toy_validation.residual_small,
-    converged = toy_validation.converged,
+    root_check_passed = isapprox(toy_run.final_x, sqrt(2); atol = 1e-10),
+    residual_check_passed = toy_run.final_residual <= 1e-12,
+    converged = toy_run.converged,
 )
 
 # ╔═╡ 10000000-0000-0000-0000-000000000007
@@ -116,7 +136,7 @@ md"""
 - The final iterate should be close to `sqrt(2)`.
 - The residual should drop rapidly from the initial value.
 - If the residual does not decrease, inspect the derivative, the update formula, or the starting guess before adding any extra features.
-- This notebook is only the bridge into the Ibrahim 2023 workflow. The later paper notebook will replace the toy equation with the paper's actual numerical problem and stopping criteria.
+- The bridge to the Ibrahim 2023 notebook is deliberate, but the notebook stays toy-sized here.
 """
 
 # ╔═╡ 10000000-0000-0000-0000-000000000009
@@ -130,7 +150,15 @@ The same loop from notebook 00 applies here:
 3. run it on a tiny known example
 4. validate the result before adding complexity
 
-That discipline matters even for a toy example, because it is the same habit we need when we move to the Ibrahim paper.
+That discipline matters even for a toy example.
+"""
+
+# ╔═╡ 10000000-0000-0000-0000-000000000009a
+next_prompt_after_validation = raw"""
+Now write the next Pluto cell that adapts this same Newton workflow to the paper's actual equation.
+Keep the cell minimal.
+Name the paper-specific assumptions explicitly before you code them.
+Do not add benchmarking or extra abstractions yet.
 """
 
 # ╔═╡ 10000000-0000-0000-0000-00000000000a
@@ -140,8 +168,9 @@ md"""
 This notebook is valid if all of the following are true:
 
 - the prompt is written explicitly in the notebook
+- the task restatement is written explicitly in the notebook
 - the Newton solver cell runs on a known scalar example
-- the validation tuple reports `converged = true`
+- the verification summary reports `converged = true`
 - the residual plot shows a downward trend on a log scale
 
 The notebook does not claim paper reproduction. It only proves that the AI-assisted coding loop works on a small academic numerical task.
