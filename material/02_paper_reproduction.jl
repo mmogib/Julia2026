@@ -530,6 +530,81 @@ first_case_iteration_validation = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000ee
 md"""
+## Reusable First-Step Unit
+
+The demonstrated `x_0 -> x_1` calculation is now packaged as one reusable first-step helper for the verified `ExponetialI` case shape.
+
+This helper is still intentionally small. It covers the current notebook scope only:
+
+- project the input point
+- evaluate `F(x_0)`
+- build the first direction and trial point
+- evaluate the first line-search condition quantities
+- build the first correction candidate
+- return one demonstrated `x_1` and `F(x_1)`
+
+It does not implement the general iteration loop or the full method.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000ef
+function sttdfpm_first_step_unit(problem, projection, x0; projection_config, t, sigma)
+    projected_x0 = projection(x0; projection_config...)
+    F0 = problem(projected_x0)
+    d0 = .-F0
+    z0 = projected_x0 .+ t .* d0
+    projected_z0 = projection(z0; projection_config...)
+    Fz0 = problem(projected_z0)
+    line_search_lhs = -sum(Fz0 .* d0)
+    line_search_rhs = sigma * t * sum(abs2, d0)
+    rho0 = sum(Fz0 .* (projected_x0 .- projected_z0))
+    Fz0_norm_sq = sum(abs2, Fz0)
+    lambda0 = rho0 / Fz0_norm_sq
+    correction_direction = lambda0 .* Fz0
+    x1 = projection(projected_x0 .- correction_direction; projection_config...)
+    F1 = problem(x1)
+    (
+        projected_x0 = projected_x0,
+        F0 = F0,
+        d0 = d0,
+        z0 = z0,
+        projected_z0 = projected_z0,
+        Fz0 = Fz0,
+        line_search_lhs = line_search_lhs,
+        line_search_rhs = line_search_rhs,
+        rho0 = rho0,
+        lambda0 = lambda0,
+        correction_direction = correction_direction,
+        x1 = x1,
+        F1 = F1,
+        residual_norm_0 = sqrt(sum(abs2, F0)),
+        residual_norm_1 = sqrt(sum(abs2, F1)),
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000f0
+first_case_first_step_function_unit = sttdfpm_first_step_unit(
+    first_case_problem,
+    first_case_projection,
+    first_case_unit.x0;
+    projection_config = first_case_choice.projection_config,
+    t = first_case_paper_parameters.t,
+    sigma = first_case_paper_parameters.sigma,
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000f1
+first_case_first_step_function_validation = (
+    projected_x0_matches_demonstration = first_case_first_step_function_unit.projected_x0 == first_case_unit.projected_x0,
+    trial_point_matches_demonstration = first_case_first_step_function_unit.projected_z0 == first_case_sttdfpm_state.projected_z0,
+    line_search_terms_match_demonstration = isapprox(first_case_first_step_function_unit.line_search_lhs, first_case_line_search_unit.lhs; atol = 1e-12) &&
+        isapprox(first_case_first_step_function_unit.line_search_rhs, first_case_line_search_unit.rhs; atol = 1e-12),
+    correction_terms_match_demonstration = isapprox(first_case_first_step_function_unit.rho0, first_case_correction_unit.rho0; atol = 1e-12) &&
+        isapprox(first_case_first_step_function_unit.lambda0, first_case_correction_unit.lambda0; atol = 1e-12),
+    x1_matches_demonstration = first_case_first_step_function_unit.x1 == first_case_iteration_unit.x1,
+    residual_norm_matches_demonstration = isapprox(first_case_first_step_function_unit.residual_norm_1, first_case_iteration_unit.residual_norm_1; atol = 1e-12),
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000f2
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -577,12 +652,13 @@ This scaffold is intentionally narrow.
 - It now contains one small line-search condition unit: evaluate a single sufficient-descent inequality at the current trial point and report whether it passes at the chosen initialization.
 - It now contains one small correction-step unit: derive `rho0`, derive the scalar correction coefficient, form one projected correction candidate, and validate those quantities without yet claiming a full next iterate.
 - It now contains one demonstrated single-iteration update unit: set `x1` equal to the current correction candidate, evaluate `F(x1)`, and compare the before/after residual norms without claiming a general convergence result.
+- It now contains one reusable first-step helper that reproduces the same demonstrated `x0 -> x1` calculation for this verified case.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Decide whether the next unit should add one more paper-specific condition around the demonstrated `x1` update or start isolating reusable iteration helpers.",
+        "Decide whether the next unit should generalize the helper beyond the first case or add one more paper-specific condition around the demonstrated `x1` update.",
         "Keep the next unit tied to the same verified `ExponetialI` state bundle.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
@@ -621,6 +697,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook contains one small line-search condition unit with a visible validation check
 - the notebook contains one small correction-step unit with a visible validation check
 - the notebook contains one demonstrated single-iteration update unit with a visible validation check
+- the notebook contains one reusable first-step helper validated against the demonstrated first update
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -637,6 +714,7 @@ validation_targets = (
     first_case_line_search_validated = all(values(first_case_line_search_validation)),
     first_case_correction_validated = all(values(first_case_correction_validation)),
     first_case_iteration_validated = all(values(first_case_iteration_validation)),
+    first_case_function_unit_validated = all(values(first_case_first_step_function_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -653,13 +731,14 @@ notebook_verification_summary = (
     first_case_line_search_validated = validation_targets.first_case_line_search_validated,
     first_case_correction_validated = validation_targets.first_case_correction_validated,
     first_case_iteration_validated = validation_targets.first_case_iteration_validated,
+    first_case_function_unit_validated = validation_targets.first_case_function_unit_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, first correction-step unit, demonstrated first single-iteration update, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, first line-search condition unit, first correction-step unit, demonstrated first single-iteration update, reusable first-step helper, and validation targets are explicit.
 
 It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully. In particular, the notebook now demonstrates one explicit `x_1` update for this initialization, but it still does not claim a general loop or a full implementation of the complete method.
 """
