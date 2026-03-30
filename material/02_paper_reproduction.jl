@@ -349,6 +349,50 @@ first_case_validation = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000e1
 md"""
+## First STTDFPM State Unit
+
+The next smallest paper-specific unit is a step-ready state for the verified `ExponetialI` case.
+
+This notebook still does not implement a full STTDFPM iteration or line search. It only makes the paper parameters visible, forms the initial direction `d0 = -F(x0)`, applies one explicit trial step using the paper's `t`, and checks the geometry that should already hold before any full update logic is added.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e2
+first_case_paper_parameters = (
+    t = paper_fixed_choices.parameters.t,
+    beta = paper_fixed_choices.parameters.beta,
+    sigma = paper_fixed_choices.parameters.sigma,
+    gamma = paper_fixed_choices.parameters.gamma,
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e3
+first_case_sttdfpm_state = let
+    F0 = first_case_unit.residual
+    d0 = .-F0
+    trial_step = first_case_paper_parameters.t
+    z0 = first_case_unit.projected_x0 .+ trial_step .* d0
+    projected_z0 = first_case_projection(z0; first_case_choice.projection_config...)
+    (
+        F0 = F0,
+        d0 = d0,
+        trial_step = trial_step,
+        z0 = z0,
+        projected_z0 = projected_z0,
+        directional_inner_product = sum(F0 .* d0),
+        projected_trial_minimum = minimum(projected_z0),
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e4
+first_case_sttdfpm_validation = (
+    paper_trial_step_is_used = isapprox(first_case_sttdfpm_state.trial_step, paper_fixed_choices.parameters.t; atol = 0.0),
+    initial_direction_is_negative_residual = all(isapprox.(first_case_sttdfpm_state.d0, .-first_case_sttdfpm_state.F0; atol = 1e-12)),
+    initial_direction_is_descent_like = first_case_sttdfpm_state.directional_inner_product < 0,
+    projected_trial_point_is_feasible = first_case_sttdfpm_state.projected_trial_minimum >= first_case_unit.projection_bounds[1],
+    trial_point_stays_in_positive_orthant = first_case_sttdfpm_state.projected_z0 == first_case_sttdfpm_state.z0,
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e5
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -392,13 +436,14 @@ This scaffold is intentionally narrow.
 - It proves the helper definitions are available locally.
 - It records a concrete crosswalk structure for paper labels, helper symbols, projections, dimensions, and mapping status.
 - It now contains one small executable verified first-case unit: initialize `x0`, apply the explicit positive-orthant projection, evaluate the residual, and validate that result before scaling.
+- It now contains one small STTDFPM-specific state unit: use the paper's `t`, form `d0 = -F(x0)`, build a projected trial point, and validate that state before any line search logic is added.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Use the verified `ExponetialI` case to define the next step-ready state bundle.",
-        "Add one small state update or feasibility-preserving preparation step for that same case.",
+        "Use the verified `ExponetialI` case to extend the step-ready state into one more paper-specific quantity after the current trial point.",
+        "Add one small geometry or residual check tied to that same state bundle.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -414,6 +459,7 @@ Restate Ibrahim 2023 Experiment 1 in plain language.
 List which quantities are fixed by the paper and which choices are still local.
 Use the helper problem and projection definitions already loaded in this notebook.
 Use the verified `ExponetialI` first-case slot and its explicit projection config to pick the next smallest implementation unit.
+Keep the unit small: parameter bundle, direction, trial point, or one geometry check is enough.
 Do not expand into suite-wide benchmarking until the first case mapping is verified.
 """
 
@@ -431,6 +477,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook records the remaining local choices explicitly
 - the notebook contains a concrete crosswalk and a first-case candidate slot
 - the notebook contains one small executable unit with a visible pass/fail validation check
+- the notebook contains one small STTDFPM-specific state unit with a visible validation check
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -443,6 +490,7 @@ validation_targets = (
     crosswalk_present = !isempty(crosswalk_rows) && crosswalk_summary.mapped_problem_symbols_defined && crosswalk_summary.mapped_projection_symbols_defined,
     first_case_slot_present = first_case_slot.mapping_status == :verified_from_pdftotext,
     first_case_unit_validated = all(values(first_case_validation)),
+    first_case_sttdfpm_state_validated = all(values(first_case_sttdfpm_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -455,13 +503,14 @@ notebook_verification_summary = (
     crosswalk_present = validation_targets.crosswalk_present,
     first_case_slot_present = validation_targets.first_case_slot_present,
     first_case_unit_validated = validation_targets.first_case_unit_validated,
+    first_case_sttdfpm_state_validated = validation_targets.first_case_sttdfpm_state_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, first STTDFPM-specific state unit, and validation targets are explicit.
 
 It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully.
 """
