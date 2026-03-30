@@ -14,6 +14,7 @@ The material follows the workflow-first design and uses Ibrahim et al. (2023) fo
 4. Open `00_setup_and_stack.jl` first.
 5. Move to `01_ai_workflow_toy_example.jl` for the toy workflow loop.
 6. Move to `02_paper_reproduction.jl` for the verified Experiment 1 scaffold and first-step implementation units.
+7. Move to `03_benchmark_and_extensions.jl` for the benchmark-extension notebook.
 
 Suggested commands:
 
@@ -30,6 +31,7 @@ Use the same `material` project for notebook execution and smoke checks.
 julia --project=material material/00_setup_and_stack.jl
 julia --project=material material/01_ai_workflow_toy_example.jl
 julia --project=material material/02_paper_reproduction.jl
+julia --project=material material/03_benchmark_and_extensions.jl
 julia --project=material -e "using Pkg; Pkg.instantiate(); using Pluto, PlutoUI, Plots, BenchmarkTools"
 ```
 
@@ -40,5 +42,5 @@ julia --project=material -e "using Pkg; Pkg.instantiate(); using Pluto, PlutoUI,
 - `00_setup_and_stack.jl` introduces the shared workflow.
 - `01_ai_workflow_toy_example.jl` teaches the small-unit validation loop on a toy problem.
 - `02_paper_reproduction.jl` now contains the verified `ExponetialI` case scaffold, one demonstrated first iteration, and a reusable first-step helper for that case.
+- `03_benchmark_and_extensions.jl` turns the verified Experiment 1 case into a small benchmark-extension notebook without claiming the paper's full benchmark reproduction.
 - `Pluto`, `PlutoUI`, `Plots`, and `BenchmarkTools` are already included because the later notebooks will use them.
-- `03_benchmark_and_extensions.jl` is still the planned benchmark-extension notebook and is not present yet.
