@@ -186,7 +186,8 @@ The next cell checks that the active project is the workshop project and records
 (
     julia_version = string(VERSION),
     active_project = Base.active_project(),
-    project_files_present = isfile("Project.toml") && isfile("Manifest.toml"),
+    notebook_dir = @__DIR__,
+    project_files_present = isfile(joinpath(@__DIR__, "Project.toml")) && isfile(joinpath(@__DIR__, "Manifest.toml")),
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000012
