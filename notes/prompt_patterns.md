@@ -32,9 +32,9 @@ If anything is unclear, stop and identify the exact ambiguity instead of guessin
 ## Pattern 4: Ask For A Reproducibility Check
 
 ```text
-Write a Julia check that verifies the output against the expected qualitative behavior from the paper.
-Prefer small tables, residual checks, or plotted trends over broad claims.
-Call out any mismatch explicitly.
+Write a Julia check that targets one specific table, figure, tolerance, or trend from the paper.
+State the exact reference, the numeric threshold or qualitative trend to check, and what counts as a match.
+Prefer a single bounded validation over broad reproduction claims.
 ```
 
 ## Pattern 5: Ask For A Benchmark Harness

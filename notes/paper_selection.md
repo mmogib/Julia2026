@@ -6,6 +6,9 @@ Choose one paper that is academically respectable, implementable in a workshop s
 
 ## Selection Criteria
 
+Scores use a 1-5 scale, where 1 is poor and 5 is strong.
+Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
+
 | Criterion | Weight | What Good Looks Like |
 | --- | ---: | --- |
 | Numerical experiment clarity | 5 | The paper states inputs, parameters, outputs, and evaluation metrics clearly enough to reproduce one target result without guesswork. |
@@ -58,11 +61,11 @@ Choose one paper that is academically respectable, implementable in a workshop s
 
 ## Scored Comparison
 
-| Candidate | Experiment Clarity | Complexity | Validation | Benchmark | Setup Burden | Workshop Fit | Total |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `aFairagShahraniTawfiq2016SIAMJMATRIX` | 4 | 2 | 4 | 4 | 2 | 3 | 19 |
-| `Ibrahim2023 spectral three-term derivative-free` | 4 | 4 | 5 | 4 | 4 | 5 | 26 |
-| `NMS_DEED_MPSGrid_DR` | 3 | 1 | 4 | 4 | 1 | 1 | 14 |
+| Candidate | Clarity (w=5) | Complexity (w=5) | Validation (w=5) | Benchmark (w=4) | Sensitivity (w=2) | Setup (w=4) | Fit (w=5) | Weighted Total |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `aFairagShahraniTawfiq2016SIAMJMATRIX` | 4 | 2 | 4 | 4 | 2 | 2 | 3 | 93 |
+| `Ibrahim2023 spectral three-term derivative-free` | 4 | 4 | 5 | 4 | 4 | 4 | 5 | 130 |
+| `NMS_DEED_MPSGrid_DR` | 3 | 1 | 4 | 4 | 4 | 1 | 1 | 73 |
 
 ## Recommended Paper
 
@@ -71,9 +74,13 @@ Choose one paper that is academically respectable, implementable in a workshop s
 ### Why This Fits
 
 - It is workflow-first rather than derivation-heavy.
-- The benchmark suite gives participants immediate, testable subproblems.
-- The sparse-signal recovery application provides a natural extension path into validation and performance comparison.
+- The paper supports one bounded benchmark reproduction in the workshop and a separate extension path afterward.
 - The implementation can stay modular in Julia, which matches the workshop's emphasis on small Codex prompts and explicit checks.
+- The sparse-signal recovery application is a later extension, not part of the first-pass reproduction goal.
+
+### Bounded Workshop Claim
+
+The workshop will reproduce one representative benchmark comparison from the paper in Julia, verify it against the paper's reported trend and stopping tolerance, and leave the sparse-signal recovery application as a later extension if time remains.
 
 ## Rejected Candidates
 
@@ -89,7 +96,15 @@ Choose one paper that is academically respectable, implementable in a workshop s
 
 ## Workshop Experiment Target
 
-- selected figure/table: the benchmark comparison table for iterations, function evaluations, and CPU time, plus the sparse-signal recovery MSE table.
-- exact claim we want to reproduce: the derivative-free spectral three-term methods outperform the comparison methods on the benchmark set and recover sparse signals with low MSE.
-- required inputs and parameters: benchmark functions, initial guesses, stopping tolerances, and synthetic sensing data for the recovery experiment.
-- acceptance criteria for a successful workshop reproduction: one benchmark problem solves correctly, the comparison metrics are computed in Julia, and the sparse-signal example shows the expected qualitative performance advantage.
+### Primary Reproduction Target
+
+- selected figure/table: one benchmark comparison table row for iterations, function evaluations, and CPU time.
+- exact claim we want to reproduce: the Julia implementation matches the paper's reported trend on one representative benchmark problem under the stated stopping tolerance.
+- required inputs and parameters: the chosen benchmark function, its initial guess, the stopping tolerance, and the algorithm parameters used for that one run.
+- acceptance criteria for a successful workshop reproduction: one benchmark problem solves correctly and the comparison metrics are computed in Julia.
+
+### Later Extensions
+
+- sparse-signal recovery MSE table.
+- optional expansion to multiple benchmark problems after the primary reproduction is stable.
+- broader runtime comparisons once the single-case reproduction is verified.
