@@ -24,7 +24,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 | Candidate | Source | Experiment Target | Complexity | Benchmark Potential | Risks | Decision |
 | --- | --- | --- | --- | --- | --- | --- |
 | `aFairagShahraniTawfiq2016SIAMJMATRIX` | `refs/895 - aFairagShahraniTawfiq2016SIAMJMATRIX.pdf` | Lowest-order Raviart-Thomas Darcy discretization on rectangular grids, comparing the proposed block-triangular preconditioner with `Pdiv` through eigenvalue clustering, PHCG residual histories, and GMRES iteration counts. | High | Medium-High | Requires mixed FEM assembly, H(div) spaces, Schur-complement/preconditioner reasoning, and nonstandard-inner-product Krylov logic before the benchmarking story even starts. | Reject |
-| `Ibrahim2023 spectral three-term derivative-free` | `refs/Ibrahim et al. - 2023 - Two classes of spectral three-term derivative-free.pdf` | Julia implementation of STTDFPM for large-scale nonlinear equations, validated against performance profiles over 12 benchmark problems and optionally against the compressed-sensing application with reported MSE. | Medium | High | The paper clearly supports a benchmark-suite workflow, but it does not pin one canonical in-paper row tightly enough to choose a single workshop target without leaning on external materials. | Keep |
+| `Ibrahim2023 spectral three-term derivative-free` | `refs/Ibrahim et al. - 2023 - Two classes of spectral three-term derivative-free.pdf` | Julia implementation of STTDFPM anchored on the compressed-sensing application from Experiment 2, with Experiment 1's 12-problem suite reserved for later benchmark extension work. | Medium | High | Experiment 1 is still not specific enough in the manuscript to serve as the workshop anchor by itself, so the note must keep the benchmark-suite story as a follow-on rather than the primary reproduction. | Keep |
 | `NMS_DEED_MPSGrid_DR` | `refs/NMS_DEED_MPSGrid_DR.pdf` | SGSD-DEED model progression, IEEE 30-bus DC-OPF validation, customer-scaling studies, sensitivity analysis, Pareto fronts, and Saudi case-study comparisons. | Very High | High | Rich benchmarking, but the optimization model surface is too large for a workshop-first implementation and would push the session toward model comprehension rather than disciplined reproduction workflow. | Reject |
 
 ## Candidate Reviews
@@ -53,9 +53,9 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
   - Experiment 1 reports only performance profiles in the manuscript; the paper explicitly points readers to an external repository for detailed numerical experiments.
   - Experiment 2 is more concrete in-paper: compressed sensing with randomly generated `A`, Gaussian noise `N(0, 0.01)`, `n = 2^11`, `m = 2^9`, `27` nonzeros in the original signal, `100` trials, and average MSE reported for four methods.
 - Inputs/data required: benchmark-problem definitions or one application formulation, starting vectors, stopping rules, and comparison metrics.
-- Validation surface: strong. Performance-profile trends, stopping behavior, and the compressed-sensing MSE table all support lightweight checks.
-- Workshop fit assessment: best match for the approved design because the implementation can center on a compact numerical workflow in Julia, with benchmarking as the main narrative and sensitivity left secondary.
-- Canonical-target assessment: keep deferred for now. The paper supports the shortlist decisively, but the exact single benchmark case for the workshop is not fully grounded inside the manuscript alone because Experiment 1 is suite-level and the detailed per-problem results are delegated to external materials.
+- Validation surface: good once framed correctly. The compressed-sensing experiment gives a concrete paper-only reproduction target, while Experiment 1 supports later benchmarking trends rather than the initial anchor.
+- Workshop fit assessment: best match for the approved design because notebook 02 can reproduce one bounded in-text experiment, notebook 03 can extend into benchmarking, and sensitivity can remain secondary.
+- Canonical-target assessment: the workshop anchor should be Experiment 2, not a deferred Experiment 1 row. Experiment 1 remains useful, but only as a follow-on benchmark extension because the manuscript reports it at suite level and delegates detailed numerics to external materials.
 
 ### NMS_DEED_MPSGrid_DR
 
@@ -77,7 +77,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 | Candidate | Clarity (w=5) | Complexity (w=5) | Validation (w=5) | Benchmark (w=4) | Sensitivity (w=2) | Setup (w=4) | Fit (w=5) | Weighted Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `aFairagShahraniTawfiq2016SIAMJMATRIX` | 4 | 1 | 4 | 3 | 2 | 1 | 2 | 74 |
-| `Ibrahim2023 spectral three-term derivative-free` | 4 | 4 | 5 | 4 | 3 | 4 | 5 | 126 |
+| `Ibrahim2023 spectral three-term derivative-free` | 4 | 4 | 4 | 4 | 3 | 4 | 5 | 121 |
 | `NMS_DEED_MPSGrid_DR` | 4 | 1 | 4 | 5 | 5 | 1 | 1 | 85 |
 
 ## Recommended Paper
@@ -86,22 +86,24 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
 
 ### Why This Fits
 
-- It preserves the workshop's workflow-first shape: implement a compact numerical method, run it, inspect stopping behavior, and benchmark against a small comparison set.
+- It preserves the workshop's workflow-first shape: implement a compact numerical method, run it, inspect stopping behavior, and then extend into benchmarking once the base reproduction is stable.
 - The paper is already grounded in Julia, which lowers translation overhead for a Codex-assisted workshop.
-- Benchmarking is the core story in the manuscript itself: Experiment 1 is a benchmark-suite comparison, while the compressed-sensing application can remain optional or follow-on.
+- The manuscript gives one concrete paper-only reproduction target in Experiment 2, which is exactly what notebook 02 needs.
+- Benchmarking still belongs in the workshop design, but as notebook 03: Experiment 1's suite-level material is better used as the extension layer after the primary reproduction is working.
 - Validation can stay lightweight and explicit, which matches the approved mixed hands-on format better than either FEM infrastructure or large nonlinear energy models.
 
 ### Bounded Workshop Claim
 
-The workshop should use this paper for the shortlist and implementation direction, but it should not yet lock a single canonical benchmark row from the manuscript.
+The workshop should use `Ibrahim2023` with a concrete primary target and a separate benchmark extension path.
 
-Reason:
+Primary reproduction target for notebook 02:
 
-- Experiment 1 is reported in-paper as performance profiles over 12 problems, 3 dimensions, and 14 initial-point families.
-- The manuscript names the benchmark problems and stopping rules, but it does not provide a single clearly privileged table row to reproduce as the workshop anchor.
-- The paper explicitly sends readers to external materials for detailed numerical experiments.
+- reproduce the compressed-sensing application from Experiment 2 using the in-text settings `n = 2^11`, `m = 2^9`, `27` nonzeros, Gaussian noise `N(0, 0.01)`, `100` trials, and MSE comparison against the baseline methods
 
-That is enough to justify the paper choice, but not enough to name the exact canonical workshop target without overcommitting.
+Benchmark extension for notebook 03:
+
+- use Experiment 1's 12-problem suite as the follow-on benchmarking layer once the primary implementation is stable
+- treat the manuscript's performance profiles as trend targets, not as a paper-only canonical single-case anchor
 
 ## Rejected Candidates
 
@@ -119,25 +121,22 @@ That is enough to justify the paper choice, but not enough to name the exact can
 
 ### Canonical Target Selection
 
-Keep the Task 1 deferral in place.
-
-The canonical workshop benchmark target is still **not selected** from the paper text alone.
+The primary workshop reproduction target is **selected** from the paper text alone.
 
 Current grounded position:
 
 - `Ibrahim2023` is the correct paper to build around.
-- The exact single benchmark case should be fixed only after consulting the detailed benchmark artifacts or repository material referenced by the paper.
-- If the workshop must remain paper-only, the safer bounded option is to treat the canonical target as "one representative benchmark case from Experiment 1" rather than naming a specific problem-number/dimension/initial-point tuple now.
+- Notebook 02 should anchor on Experiment 2, because the manuscript states the compressed-sensing setup in enough detail to define one bounded reproduction target without guessing.
+- Notebook 03 should handle Experiment 1 as the benchmark extension layer, because the manuscript gives suite-level trends there but not one privileged in-paper benchmark row.
 
 ### Later Extensions
 
-- reproduce one compressed-sensing application run using the paper's in-text settings (`n = 2^11`, `m = 2^9`, `100` trials, MSE comparison) if the workshop needs a secondary application
-- expand from one benchmark case to a small benchmark panel once the first implementation is stable
+- expand from the Experiment 2 reproduction to a small Experiment 1 benchmark panel once the first implementation is stable
 - add runtime and function-evaluation benchmarking against one or two baseline methods after the core reproduction is verified
 
 ## Selection Verification
 
 - Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format and keeps benchmarking as the primary story.
 - Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite evaluation, and a concrete compressed-sensing application with stated dimensions and metrics.
-- Canonical-target check: the exact workshop benchmark remains deferred because the manuscript reports suite-level performance profiles and points detailed per-problem numerics to external materials.
+- Canonical-target check: notebook 02 is now anchored to Experiment 2, while Experiment 1 is explicitly scoped as the benchmark extension layer rather than the primary anchor.
 - Rejection-scope check: both rejected papers are rejected for workshop-scope reasons grounded in the papers themselves, not for lack of academic quality.
