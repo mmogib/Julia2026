@@ -90,6 +90,13 @@ toy_validation = (
     converged = toy_run.converged,
 )
 
+# ╔═╡ 10000000-0000-0000-0000-000000000006a
+toy_verification_summary = (
+    root_check_passed = toy_validation.close_to_root,
+    residual_check_passed = toy_validation.residual_small,
+    converged = toy_validation.converged,
+)
+
 # ╔═╡ 10000000-0000-0000-0000-000000000007
 plot(
     0:length(toy_run.residuals) - 1,
