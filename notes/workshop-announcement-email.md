@@ -14,7 +14,7 @@ The workshop will run as **two sessions total, one 2-hour session on each day**,
 
 Participants should plan to **bring their own laptops**. Before the workshop begins, they must already have:
 
-- **Codex installed and working** (the Julia coding assistant we will use in the workshop)
+- **Codex installed and working** (the AI coding assistant we will use in the workshop with Julia)
 - **Julia installed and working**
 - comfort with basic programming concepts such as variables, functions, loops, and arrays
 
