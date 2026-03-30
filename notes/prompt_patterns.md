@@ -53,6 +53,17 @@ Keep the cell self-contained and make sure it can be validated on its own.
 Stop after that cell and summarize the test I should run.
 ```
 
+## Toy Example Choice
+
+**Choice:** Newton-based root finding for solving `F(x) = 0` on a scalar nonlinear equation.
+
+### Why This Example
+
+- it is mathematically familiar and easy to explain in one sitting
+- it supports a small, testable Julia implementation with a known reference root
+- it lets the workshop practice the full AI-assisted loop without dragging in paper-specific details too early
+- it bridges cleanly to the later Ibrahim 2023 notebook, where the same workflow discipline will be applied to the paper's actual numerical problem
+
 ## Anti-Patterns
 
 - asking for a complete research codebase in one prompt
