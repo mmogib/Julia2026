@@ -81,21 +81,21 @@ paper_fixed_choices = (
 md"""
 ## Repository Helper Definitions
 
-The user added local helper files in the main repository root:
+This branch now carries the helper files directly under the repository `refs/` directory:
 
 - `refs/problems.jl`
 - `refs/projections.jl`
 
-This notebook reads those files directly from the committed repository path instead of copying them into the worktree. That keeps the scaffold honest about source location and avoids unnecessary duplication.
+This notebook loads those committed branch-local files through a repo-local path based on `@__DIR__`. The same path shape works inside the worktree now and after merge into the main checkout.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000008
 helper_paths = (
     notebook_dir = @__DIR__,
-    worktree_root = normpath(joinpath(@__DIR__, "..")),
-    main_repo_root = normpath(joinpath(@__DIR__, "..", "..", "..")),
-    problems = normpath(joinpath(@__DIR__, "..", "..", "..", "refs", "problems.jl")),
-    projections = normpath(joinpath(@__DIR__, "..", "..", "..", "refs", "projections.jl")),
+    repo_root = normpath(joinpath(@__DIR__, "..")),
+    helper_dir = normpath(joinpath(@__DIR__, "..", "refs")),
+    problems = normpath(joinpath(@__DIR__, "..", "refs", "problems.jl")),
+    projections = normpath(joinpath(@__DIR__, "..", "refs", "projections.jl")),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000009
@@ -107,7 +107,7 @@ helper_verification = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000a
 begin
-    @assert helper_verification.helper_files_present "Expected refs/problems.jl and refs/projections.jl in the main repository root."
+    @assert helper_verification.helper_files_present "Expected refs/problems.jl and refs/projections.jl inside this repository."
     include(helper_paths.problems)
     include(helper_paths.projections)
     nothing
@@ -150,6 +150,76 @@ helper_symbol_checks = (
 )
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000d
+crosswalk_rows = [
+    (
+        paper_label = "Problem 1",
+        paper_source = "Zhou and Li (2007)",
+        local_helper_symbol = :NonsmoothSine,
+        projection_symbol = :projectOnBox,
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :provisional,
+        notes = "Problem family and nonnegative projection look aligned, but the exact paper naming still needs table-level verification.",
+    ),
+    (
+        paper_label = "Problem 2",
+        paper_source = "Zhou and Li (2007)",
+        local_helper_symbol = :SmoothSine,
+        projection_symbol = :projectOnBox,
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :provisional,
+        notes = "Helper comments point to the same source family; lower-bound details still need confirmation against Ibrahim 2023.",
+    ),
+    (
+        paper_label = "Problem 3",
+        paper_source = "La Cruz and Raydan (2003)",
+        local_helper_symbol = :ExponetialIII,
+        projection_symbol = :projectOnRn,
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :provisional,
+        notes = "The source reference is explicit in the helper file, but the Experiment 1 numbering crosswalk still needs verification.",
+    ),
+    (
+        paper_label = "Problem 4",
+        paper_source = "Zheng, Yang, and Liang (2020)",
+        local_helper_symbol = :ModifiedTrigI,
+        projection_symbol = :projectOnRn,
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :candidate,
+        notes = "A plausible first implementation target because the helper definition is compact and unconstrained.",
+    ),
+    (
+        paper_label = "Problem 5",
+        paper_source = "Bing and Lin (1991)",
+        local_helper_symbol = :Tridiagonal,
+        projection_symbol = :projectOnRn,
+        dimensions = experiment_definition.reported_dimensions,
+        mapping_status = :provisional,
+        notes = "The tridiagonal family appears in helper comments and is a plausible Experiment 1 member.",
+    ),
+]
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000da
+crosswalk_summary = (
+    rows = length(crosswalk_rows),
+    statuses = map(row -> row.mapping_status, crosswalk_rows),
+    mapped_symbols_defined = all(
+        row -> isdefined(@__MODULE__, row.local_helper_symbol) && isdefined(@__MODULE__, row.projection_symbol),
+        crosswalk_rows,
+    ),
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000db
+first_case_slot = (
+    paper_label = "Problem 4",
+    local_helper_symbol = :ModifiedTrigI,
+    projection_symbol = :projectOnRn,
+    dimension = 10^3,
+    mapping_status = :candidate,
+    verification_boundary = "Use this as the first implementation runway only after confirming that Ibrahim 2023 Experiment 1 maps this paper row to the same local helper family.",
+    implementation_readiness = "The helper function and projection are available locally, so the next notebook unit can focus on a single residual-evaluation or feasibility check.",
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000dc
 md"""
 ## Extracted Assumptions
 
@@ -171,14 +241,14 @@ assumption_register = (
         "STTDFPM and ISTTDFPM are the primary methods, compared against MOPCG, CGDFPM, and AHDFPM.",
     ),
     fixed_from_repository = (
-        "refs/problems.jl exists in the main repository root.",
-        "refs/projections.jl exists in the main repository root.",
-        "The helper files expose concrete Julia function definitions for benchmark problems and projection operators.",
+        "refs/problems.jl exists inside this branch.",
+        "refs/projections.jl exists inside this branch.",
+        "The helper files expose concrete Julia function definitions for benchmark problems and projection operators through repo-local paths.",
     ),
     still_open_but_explicit = (
-        "The exact one-to-one mapping between the manuscript's 12 named Experiment 1 problems and the local helper names is not yet fully verified in this notebook.",
-        "The first local benchmark case should be selected only after that mapping is checked, not by guessing from similar names.",
-        "The manuscript reports suite-level performance profiles, so any local table or per-case result must be labeled as a workshop reproduction choice rather than a direct paper table copy unless the mapping is confirmed.",
+        "The crosswalk now records candidate paper-to-helper mappings, but not every Experiment 1 row is verified yet.",
+        "The first local benchmark case is represented explicitly as a candidate slot rather than a finished verified benchmark row.",
+        "The manuscript reports suite-level performance profiles, so any local table or per-case result must still be labeled as a workshop reproduction choice unless the mapping is confirmed.",
     ),
 )
 
@@ -190,15 +260,15 @@ This scaffold is intentionally narrow.
 
 - It documents the paper and the experiment before any algorithm cell is added.
 - It proves the helper definitions are available locally.
-- It surfaces the benchmark-case mapping boundary instead of hiding it.
-- It leaves room for the next notebook cells to implement one small verified unit at a time.
+- It records a concrete crosswalk structure for paper labels, helper symbols, projections, dimensions, and mapping status.
+- It leaves a first-case candidate slot ready for the next notebook cells to implement one small verified unit at a time.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
-        "Select one helper-backed Experiment 1 case only after verifying the paper-to-helper name mapping.",
-        "Implement the smallest STTDFPM step or residual-evaluation unit needed for that case.",
+        "Confirm or correct the candidate crosswalk row that will become the first benchmark case.",
+        "Implement the smallest STTDFPM step or residual-evaluation unit needed for the first-case slot.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -213,7 +283,7 @@ workflow_prompt = raw"""
 Restate Ibrahim 2023 Experiment 1 in plain language.
 List which quantities are fixed by the paper and which choices are still local.
 Use the helper problem and projection definitions already loaded in this notebook.
-Write the smallest Julia unit that can be validated before any benchmark claim is made.
+Use the crosswalk rows and the first-case slot to pick the next smallest implementation unit.
 Do not expand into suite-wide benchmarking until the first case mapping is verified.
 """
 
@@ -224,10 +294,12 @@ md"""
 Before this notebook can support any reproduction claim, the following checks must stay visible:
 
 - the helper files exist at the committed main-repo paths
+- the helper files exist at the committed repo-local `refs/` paths
 - the expected helper symbols are defined after loading
 - the notebook states Experiment 1 as the anchor
 - the notebook records the paper-fixed parameters explicitly
 - the notebook records the remaining local choices explicitly
+- the notebook contains a concrete crosswalk and a first-case candidate slot
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -237,6 +309,8 @@ validation_targets = (
     experiment_anchor_is_correct = experiment_definition.anchor_experiment == 1,
     paper_parameters_recorded = !isempty(keys(paper_fixed_choices.parameters)),
     open_choices_recorded = !isempty(assumption_register.still_open_but_explicit),
+    crosswalk_present = !isempty(crosswalk_rows) && crosswalk_summary.mapped_symbols_defined,
+    first_case_slot_present = first_case_slot.mapping_status in (:candidate, :verified),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -246,15 +320,17 @@ notebook_verification_summary = (
     experiment_anchor_is_correct = validation_targets.experiment_anchor_is_correct,
     paper_parameters_recorded = validation_targets.paper_parameters_recorded,
     open_choices_recorded = validation_targets.open_choices_recorded,
+    crosswalk_present = validation_targets.crosswalk_present,
+    first_case_slot_present = validation_targets.first_case_slot_present,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, and validation targets are explicit.
 
-It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure is recorded here, while any concrete benchmark row must wait until the helper-to-paper mapping is checked carefully.
+It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim must still wait until the helper-to-paper mapping is checked carefully.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000016

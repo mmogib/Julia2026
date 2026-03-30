@@ -52,7 +52,7 @@ Weighted total = sum(score x weight) across all criteria, with a maximum of 150.
   - The paper specifies 14 initial-point families, a stopping tolerance `epsilon = 10^-11`, a `k > 2000` safeguard, and explicit STTDFPM/ISTTDFPM parameter values: `t = 0.11`, `beta = 0.5`, `sigma = 0.01`, `gamma = 1.8`, `alpha_min = 10^-10`, `alpha_max = 10^30`, `r = 0.1`, `psi = 0.2`, `eta_1 = 0.001`, `eta_2 = 0.6`.
   - The manuscript reports Experiment 1 primarily through performance profiles and points readers to an external repository for detailed numerical experiments.
 - Local availability update that changes the workshop calculus:
-  - `refs/problems.jl` and `refs/projections.jl` now exist in the main repository root.
+  - `refs/problems.jl` and `refs/projections.jl` now exist inside the active branch under the repository `refs/` directory.
   - Those helper files materially reduce setup risk because they provide local problem and projection definitions that align with the monotone-equation benchmark family used by the paper.
   - The helpers are strong enough to anchor notebook 02 on Experiment 1 without pretending that every manuscript problem name has already been crosswalked one-to-one inside the workshop repo.
 - Validation surface: strong enough for a workflow-first scaffold. The notebook can record the paper-fixed suite structure, load the helper-backed definitions, verify helper availability, and make the remaining benchmark-case choice explicit rather than hidden.
@@ -100,7 +100,7 @@ The workshop should use `Ibrahim2023` with **Experiment 1 as notebook 02's ancho
 Notebook 02 should:
 
 - define the paper, the experiment, and the algorithm parameters exactly as stated in the manuscript
-- load `refs/problems.jl` and `refs/projections.jl` from the main repository root instead of duplicating them into the notebook
+- load `refs/problems.jl` and `refs/projections.jl` from the branch-local repository `refs/` path instead of reaching outside the checkout
 - record the helper-backed benchmark inventory that is available locally
 - state explicitly which parts of Experiment 1 are fixed by the paper and which remaining choices still need verification against the local helper naming
 
@@ -129,7 +129,7 @@ Current grounded position:
 - `Ibrahim2023` is the correct paper to build around.
 - Notebook 02 should anchor on Experiment 1, not on the compressed-sensing application from Experiment 2.
 - The paper fixes the suite-level structure: 12 benchmark problems, dimensions `10^3`, `10^4`, `10^5`, 14 initial-point families, stopping tolerance `10^-11`, the `k > 2000` safeguard, and the reported STTDFPM/ISTTDFPM parameters.
-- `refs/problems.jl` and `refs/projections.jl` are the local bridge that makes this anchor practical.
+- `refs/problems.jl` and `refs/projections.jl` are committed inside the branch and are the local bridge that makes this anchor practical.
 - The exact one-to-one mapping from manuscript problem names to local helper names should remain explicit in the notebook until it is verified, rather than being silently guessed.
 
 ### Later Extensions
@@ -141,5 +141,5 @@ Current grounded position:
 
 - Workshop-fit check: the recommendation stays aligned with the approved workflow-first, mixed hands-on format by anchoring notebook 02 on Experiment 1 and using the helper files to keep setup bounded.
 - Paper-evidence check: `Ibrahim2023` explicitly reports Julia implementation details, benchmark-suite dimensions, stopping rules, and algorithm parameters.
-- Helper-availability check: the repository now contains `refs/problems.jl` and `refs/projections.jl`, which changes Experiment 1 from a speculative benchmark extension into a realistic notebook anchor.
+- Helper-availability check: the branch now contains `refs/problems.jl` and `refs/projections.jl`, which changes Experiment 1 from a speculative benchmark extension into a realistic notebook anchor.
 - Honesty check: the note no longer treats Experiment 2 as the primary target, and it does not overclaim a fully verified paper-to-helper benchmark-case mapping where that mapping still needs confirmation.
