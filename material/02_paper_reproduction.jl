@@ -221,6 +221,59 @@ first_case_slot = (
 
 # ╔═╡ 20000000-0000-0000-0000-00000000000dc
 md"""
+## First-Case Choice
+
+The first implementation runway is the current `Problem 4` candidate:
+
+- local helper: `ModifiedTrigI`
+- projection: `projectOnRn`
+- starting dimension for the first executable unit: `10^3`
+
+This choice is conservative. It is still a candidate mapping, not a verified paper row, but it is the best available first unit because the helper is compact and the projection is unconstrained. That lets the notebook validate residual evaluation and state setup before any full STTDFPM step is attempted.
+"""
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000dd
+first_case_choice = (
+    selected_from_crosswalk = first_case_slot.paper_label,
+    local_helper_symbol = first_case_slot.local_helper_symbol,
+    projection_symbol = first_case_slot.projection_symbol,
+    dimension = first_case_slot.dimension,
+    mapping_status = first_case_slot.mapping_status,
+    choice_reason = "Smallest honest runway: compact helper, identity projection, and a residual that can be checked directly on a simple initialization.",
+    paper_mapping_boundary = first_case_slot.verification_boundary,
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000de
+first_case_problem = getfield(@__MODULE__, first_case_choice.local_helper_symbol)
+first_case_projection = getfield(@__MODULE__, first_case_choice.projection_symbol)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000df
+first_case_unit = let
+    n = first_case_choice.dimension
+    x0 = ones(Float64, n)
+    projected_x0 = first_case_projection(x0)
+    residual = first_case_problem(projected_x0)
+    expected_entry = sin(1.0)
+    (
+        n = n,
+        x0 = x0,
+        projected_x0 = projected_x0,
+        residual = residual,
+        residual_norm = sqrt(sum(abs2, residual)),
+        expected_entry = expected_entry,
+    )
+end
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e0
+first_case_validation = (
+    projection_is_identity = first_case_unit.projected_x0 == first_case_unit.x0,
+    residual_length_matches_dimension = length(first_case_unit.residual) == first_case_unit.n,
+    residual_entries_match_expected_value = all(isapprox.(first_case_unit.residual, first_case_unit.expected_entry; atol = 1e-12)),
+    residual_norm_is_finite = isfinite(first_case_unit.residual_norm) && first_case_unit.residual_norm > 0,
+)
+
+# ╔═╡ 20000000-0000-0000-0000-00000000000e1
+md"""
 ## Extracted Assumptions
 
 The notebook can already make these claims directly from the paper and the helper files:
@@ -261,14 +314,14 @@ This scaffold is intentionally narrow.
 - It documents the paper and the experiment before any algorithm cell is added.
 - It proves the helper definitions are available locally.
 - It records a concrete crosswalk structure for paper labels, helper symbols, projections, dimensions, and mapping status.
-- It leaves a first-case candidate slot ready for the next notebook cells to implement one small verified unit at a time.
+- It now contains one small executable first-case unit: initialize `x0`, apply the chosen projection, evaluate the residual, and validate that result before scaling.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000010
 implementation_notes = (
     immediate_next_units = (
         "Confirm or correct the candidate crosswalk row that will become the first benchmark case.",
-        "Implement the smallest STTDFPM step or residual-evaluation unit needed for the first-case slot.",
+        "Use the residual-evaluation unit to define the next step-ready state bundle for the chosen case.",
         "Add a local convergence or feasibility check before any runtime comparison.",
     ),
     non_goals_for_this_scaffold = (
@@ -300,6 +353,7 @@ Before this notebook can support any reproduction claim, the following checks mu
 - the notebook records the paper-fixed parameters explicitly
 - the notebook records the remaining local choices explicitly
 - the notebook contains a concrete crosswalk and a first-case candidate slot
+- the notebook contains one small executable unit with a visible pass/fail validation check
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000013
@@ -311,6 +365,7 @@ validation_targets = (
     open_choices_recorded = !isempty(assumption_register.still_open_but_explicit),
     crosswalk_present = !isempty(crosswalk_rows) && crosswalk_summary.mapped_symbols_defined,
     first_case_slot_present = first_case_slot.mapping_status in (:candidate, :verified),
+    first_case_unit_validated = all(values(first_case_validation)),
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000014
@@ -322,15 +377,16 @@ notebook_verification_summary = (
     open_choices_recorded = validation_targets.open_choices_recorded,
     crosswalk_present = validation_targets.crosswalk_present,
     first_case_slot_present = validation_targets.first_case_slot_present,
+    first_case_unit_validated = validation_targets.first_case_unit_validated,
 )
 
 # ╔═╡ 20000000-0000-0000-0000-000000000015
 md"""
 ## Scope Boundary
 
-This scaffold is ready when the metadata, helper availability, crosswalk structure, and validation targets are explicit.
+This scaffold is ready when the metadata, helper availability, crosswalk structure, first executable unit, and validation targets are explicit.
 
-It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim must still wait until the helper-to-paper mapping is checked carefully.
+It is not yet a benchmark result notebook. That boundary is deliberate: the paper-fixed Experiment 1 structure and the first-case runway are recorded here, while any concrete benchmark claim or full algorithm reproduction must still wait until the helper-to-paper mapping is checked carefully.
 """
 
 # ╔═╡ 20000000-0000-0000-0000-000000000016
