@@ -158,7 +158,7 @@ crosswalk_rows = [
         projection_symbol = :projectOnBox,
         dimensions = experiment_definition.reported_dimensions,
         mapping_status = :provisional,
-        notes = "Problem family and nonnegative projection look aligned, but the exact paper naming still needs table-level verification.",
+        notes = "Heuristic candidate based on the helper symbol name and an admissible nonnegative projection choice; the paper-to-helper mapping is not yet verified from committed branch evidence.",
     ),
     (
         paper_label = "Problem 2",
@@ -167,7 +167,7 @@ crosswalk_rows = [
         projection_symbol = :projectOnBox,
         dimensions = experiment_definition.reported_dimensions,
         mapping_status = :provisional,
-        notes = "Helper comments point to the same source family; lower-bound details still need confirmation against Ibrahim 2023.",
+        notes = "Heuristic candidate based on the helper symbol name and the same projection family used elsewhere in the notebook; lower-bound details still need verification against the paper.",
     ),
     (
         paper_label = "Problem 3",
@@ -176,7 +176,7 @@ crosswalk_rows = [
         projection_symbol = :projectOnRn,
         dimensions = experiment_definition.reported_dimensions,
         mapping_status = :provisional,
-        notes = "The source reference is explicit in the helper file, but the Experiment 1 numbering crosswalk still needs verification.",
+        notes = "Heuristic candidate based on the helper symbol name and unconstrained projection choice; the Experiment 1 numbering crosswalk still needs verification.",
     ),
     (
         paper_label = "Problem 4",
@@ -194,7 +194,7 @@ crosswalk_rows = [
         projection_symbol = :projectOnRn,
         dimensions = experiment_definition.reported_dimensions,
         mapping_status = :provisional,
-        notes = "The tridiagonal family appears in helper comments and is a plausible Experiment 1 member.",
+        notes = "Heuristic candidate based on the helper symbol name and unconstrained projection choice; this remains a plausible Experiment 1 member, not a verified mapping.",
     ),
 ]
 
