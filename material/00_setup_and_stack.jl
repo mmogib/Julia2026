@@ -268,4 +268,18 @@ By the end of this notebook, participants should be ready to:
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000019
+md"""
+## Notebook Verification
+
+This notebook is meant to make a few setup checks visible in the artifact itself:
+
+- project files are present and the active project points at the workshop environment
+- Julia version is captured for the session
+- the plotting smoke test renders a simple figure
+- the tiny validated computation returns `true`
+
+These checks are intentionally small. They are there to confirm the setup path, not to substitute for later reproduction validation.
+"""
+
+# ╔═╡ 00000000-0000-0000-0000-00000000001a
 PlutoUI.TableOfContents()
