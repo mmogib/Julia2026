@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This directory contains the first Pluto notebook and the shared Julia project scaffold for the workshop.
+This directory contains the shared Julia project and the current Pluto notebook set for the workshop.
 
-The material follows the approved workflow-first design and uses the Ibrahim et al. 2023 paper direction for the main reproduction arc. Later notebooks for the toy example, paper reproduction, and benchmark extension are included alongside this scaffold.
+The material follows the workflow-first design and uses Ibrahim et al. (2023) for the main reproduction arc.
 
 ## Participant Usage
 
@@ -12,7 +12,8 @@ The material follows the approved workflow-first design and uses the Ibrahim et 
 2. Install dependencies.
 3. Start Pluto.
 4. Open `00_setup_and_stack.jl` first.
-5. Use the notebook to confirm the workshop environment and workflow before moving on to later material.
+5. Move to `01_ai_workflow_toy_example.jl` for the toy workflow loop.
+6. Move to `02_paper_reproduction.jl` for the verified Experiment 1 scaffold and first-step implementation units.
 
 Suggested commands:
 
@@ -21,10 +22,23 @@ julia --project=material -e "using Pkg; Pkg.instantiate()"
 julia --project=material -e "using Pluto; Pluto.run()"
 ```
 
+## Verification Flow
+
+Use the same `material` project for notebook execution and smoke checks.
+
+```powershell
+julia --project=material material/00_setup_and_stack.jl
+julia --project=material material/01_ai_workflow_toy_example.jl
+julia --project=material material/02_paper_reproduction.jl
+julia --project=material -e "using Pkg; Pkg.instantiate(); using Pluto, PlutoUI, Plots, BenchmarkTools"
+```
+
 ## Scaffold Notes
 
 - Participants are expected to arrive with Julia and Codex already working.
 - The workshop emphasizes validation of AI-generated code, not blind acceptance.
 - `00_setup_and_stack.jl` introduces the shared workflow.
+- `01_ai_workflow_toy_example.jl` teaches the small-unit validation loop on a toy problem.
+- `02_paper_reproduction.jl` now contains the verified `ExponetialI` case scaffold, one demonstrated first iteration, and a reusable first-step helper for that case.
 - `Pluto`, `PlutoUI`, `Plots`, and `BenchmarkTools` are already included because the later notebooks will use them.
-- `01_ai_workflow_toy_example.jl`, `02_paper_reproduction.jl`, and `03_benchmark_and_extensions.jl` carry the workshop workflow, paper reproduction scaffold, and benchmark-extension notebook.
+- `03_benchmark_and_extensions.jl` is still the planned benchmark-extension notebook and is not present yet.
